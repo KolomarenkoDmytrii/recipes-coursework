@@ -12,5 +12,9 @@
         <li><a href="{% url 'register-user' %}">Register user</a></li>
         <li><a href="{% url 'login-user' %}">Login</a></li>
     </ul>
+
+    {% if user.is_authenticated %}
+    Hi {{ user.username }}!
+    {% endif %}
 </body>
 </html>

@@ -17,9 +17,14 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import TemplateView
 
 urlpatterns = [
-    path("", include("main.urls")),
-    path("user/", include("users.urls")),
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    # path("", include("main.urls")),
+    # path("user/", include("users.urls")),
+    path("accounts/", include("accounts.urls")),
+    # https://docs.djangoproject.com/en/5.1/topics/auth/default/#module-django.contrib.auth.views
+    path("accounts/", include("django.contrib.auth.urls")),
     path("admin/", admin.site.urls),
 ]
