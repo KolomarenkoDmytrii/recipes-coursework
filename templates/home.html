@@ -3,18 +3,24 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+    <h1>Головна сторінка</h1>
+
     {% if user.is_authenticated %}
         <p>Hi {{ user.username }}!</p>
 
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit">Log Out</button>
+            <button type="submit">Вийти з облікового запису</button>
         </form>
 
-        <p><a href="{% url 'password_change' %}">Password change</a></p>
+        <p><a href="{% url 'password_change' %}">Змінити пароль</a></p>
+
+        <h2>Керування рецептами</h2>
+        <p><a href="{% url 'create_recipe' %}">Створити рецепт</a></p>
+
     {% else %}
-        <p>You are not logged in</p>
-        <p><a href="{% url 'login' %}">Log in</a></p>
-        <p><a href="{% url 'signup' %}">Sign up</a></p>
+        <p>Ви не ввійшли у свій обліковий запис</p>
+        <p><a href="{% url 'login' %}">Увійти</a></p>
+        <p><a href="{% url 'signup' %}">Створити обліковий запис</a></p>
     {% endif %}
 {% endblock %}

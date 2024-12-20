@@ -21,7 +21,7 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    # path("", include("main.urls")),
+    path("", include("main.urls")),
     # path("user/", include("users.urls")),
     path("accounts/", include("accounts.urls")),
     # https://docs.djangoproject.com/en/5.1/topics/auth/default/#module-django.contrib.auth.views
