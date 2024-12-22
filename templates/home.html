@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Головна{% endblock %}
 
 {% block content %}
     <h1>Головна сторінка</h1>
@@ -17,6 +17,7 @@
 
         <h2>Керування рецептами</h2>
         <p><a href="{% url 'create_recipe' %}">Створити рецепт</a></p>
+        <p><a href="{% url 'list_recipes' %}">Переглянути рецепти</a></p>
 
     {% else %}
         <p>Ви не ввійшли у свій обліковий запис</p>

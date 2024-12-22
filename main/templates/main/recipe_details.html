@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Інформація про рецепт{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+    <p><a href="{% url 'list_recipes' %}">До переліку рецептів</a></p>
+
+    <h1>{{ recipe.name }}</h1>
+
+    <h2>Інформація</h2>
+    <p>{{ recipe.description }}</p>
+    <p>Час приготування, хв: {{ recipe.cooking_time }}</p>
+    <p>Категорія: {{ recipe.category }}</p>
+    <p>Створено: {{ recipe.created_at }}</p>
+    <p>Оновлено: {{ recipe.updated_at }}</p>
+
+    <h2>Інгредієнти</h2>
+    <ul>
+        {% for ingredient in ingredients %}
+            <li>{{ ingredient.name }}: {{ ingredient.volume }} {{ ingredient.volume_measure }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Кроки</h2>
+    <ol>
+        {% for step in steps %}
+            <li>{{ step.step_description }}</li>
+        {% endfor %}
+    </ol>
+
+    <h2>Теги</h2>
+    <ul>
+        {% for tag in tags %}
+            <li>{{ tag.tag_text }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

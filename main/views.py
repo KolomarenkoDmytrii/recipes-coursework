@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.forms import ModelForm
+from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
@@ -37,6 +38,14 @@ class RecipeTagForm(ModelForm):
         fields = ["tag_text"]
 
 
+class RecipeListView(ListView):
+    paginate_by = 5
+    model = Recipe
+
+    def get_queryset(self):
+        return Recipe.objects.filter(user=self.request.user).order_by("name")
+
+
 @login_required
 def create_recipe(request):
     if request.method == "POST":
@@ -44,7 +53,7 @@ def create_recipe(request):
         recipe_form = RecipeForm(request.POST)
         context["recipe_form"] = recipe_form
         is_error = False
-        
+
         if not recipe_form.is_valid():
             context["info_error_message"] = "Помилка в інформації про рецепт"
             is_error = True
@@ -97,3 +106,17 @@ def create_recipe(request):
     else:
         recipe_form = RecipeForm()
         return render(request, "main/create_recipe.html", {"recipe_form": recipe_form})
+
+
+@login_required
+def recipe_details(request, recipe_id):
+    recipe = Recipe.objects.get(pk=recipe_id)
+    ingredients = RecipeIngredient.objects.filter(recipe_id=recipe_id)
+    steps = RecipeStep.objects.filter(recipe_id=recipe_id).order_by("step_number")
+    tags = RecipeTag.objects.filter(recipe_id=recipe_id)
+
+    return render(
+        request,
+        "main/recipe_details.html",
+        {"recipe": recipe, "ingredients": ingredients, "tags": tags},
+    )
