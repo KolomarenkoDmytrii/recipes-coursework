@@ -4,27 +4,33 @@
 
 {% block content %}
     <h1>Створення нового рецепту</h1>
+
+    <p><a href="{% url 'home' %}">Перейти до головної сторінки</a></p>
   
     <form method="POST">
         {% csrf_token %}
         
         <h2>Інформація</h2>
         {{ recipe_form.as_p }}
+        <p>{{ info_error_message }}</p>
         
         <h2>Кроки</h2>
         <div id="steps">
         </div>
         <button type="button" id="add_step_button">Додати крок</button>
+        <p>{{ step_error_message }}</p>
         
         <h2>Інгредієнти</h2>
         <div id="ingredients">
         </div>
         <button type="button" id="add_ingredient_button">Додати інгредієнт</button>
+        <p>{{ ingredient_error_message }}</p>
         
         <h2>Теги</h2>
         <div id="tags">
         </div>
         <button type="button" id="add_tag_button">Add another tag</button>
+        <p>{{ tag_error_message }}</p>
         
         <p><button type="submit">Додати рецепт</button></p>
     </form>
@@ -34,7 +40,8 @@
             const input = document.createElement('input');
             input.type = 'text';
             input.name = 'step_description';
-            input.placeholder = 'Step description';
+            input.required = true;
+            input.placeholder = 'Опис кроку';
 
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Вилучити';
@@ -52,17 +59,21 @@
             const nameInput = document.createElement('input');
             nameInput.type = 'text';
             nameInput.name = 'ingredient_name';
-            nameInput.placeholder = 'Ingredient name';
+            nameInput.required = true;
+            nameInput.placeholder = 'Назва інгредієнту';
 
             const volumeInput = document.createElement('input');
             volumeInput.type = 'number';
+            volumeInput.step = '0.001';
             volumeInput.name = 'ingredient_volume';
-            volumeInput.placeholder = 'Volume';
+            volumeInput.required = true;
+            volumeInput.placeholder = 'Обсяг';
 
             const measureInput = document.createElement('input');
             measureInput.type = 'text';
-            measureInput.name = 'ingredient_measure';
-            measureInput.placeholder = 'Measurement unit';
+            measureInput.name = 'ingredient_volume_measure';
+            measureInput.required = true;
+            measureInput.placeholder = 'Міра обсягу';
 
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Вилучити';
@@ -82,7 +93,8 @@
             const input = document.createElement('input');
             input.type = 'text';
             input.name = 'tag_text';
-            input.placeholder = 'Tag';
+            input.required = true;
+            input.placeholder = 'Тег';
 
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Вилучити';

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Створення рецепту{% endblock %}
+
+{% block content %}
+<p>Рецепт успішно створено</p>
+
+<p>Перейти до...</p>
+<ul>
+    <li><a href="{% url 'home' %}">головної сторінки</a></li>
+    <li><a href="{% url 'create_recipe' %}">створення рецепту</a></li>
+</ul>
+{% endblock %}
