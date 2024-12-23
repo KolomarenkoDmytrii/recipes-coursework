@@ -5,8 +5,8 @@ from . import views
 
 
 urlpatterns = [
-    # path("", views.index, name="index"),
     path("recipes/create", views.create_recipe, name="create_recipe"),
     path("recipes/list", login_required(views.RecipeListView.as_view()), name="list_recipes"),
     path("recipes/details/<int:recipe_id>", views.recipe_details, name="recipe_details"),
+    path("recipes/delete/<int:recipe_id>", views.delete_recipe, name="delete_recipe"),
 ]

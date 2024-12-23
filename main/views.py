@@ -111,6 +111,10 @@ def create_recipe(request):
 @login_required
 def recipe_details(request, recipe_id):
     recipe = Recipe.objects.get(pk=recipe_id)
+
+    if recipe.user != request.user:
+        return render(request, "access_denied.html")
+
     ingredients = RecipeIngredient.objects.filter(recipe_id=recipe_id)
     steps = RecipeStep.objects.filter(recipe_id=recipe_id).order_by("step_number")
     tags = RecipeTag.objects.filter(recipe_id=recipe_id)
@@ -118,5 +122,21 @@ def recipe_details(request, recipe_id):
     return render(
         request,
         "main/recipe_details.html",
-        {"recipe": recipe, "ingredients": ingredients, "tags": tags},
+        {"recipe": recipe, "ingredients": ingredients, "tags": tags, "steps": steps},
     )
+
+
+@login_required
+def delete_recipe(request, recipe_id):
+    recipe = Recipe.objects.get(pk=recipe_id)
+
+    if recipe.user != request.user:
+        return render(request, "access_denied.html")
+
+    recipe_name = recipe.name
+
+    if request.method == "POST":
+        recipe.delete()
+        return render(request, "main/delete_recipe_success.html", {"recipe_name": recipe_name})
+    else:
+        return render(request, "main/delete_recipe.html", {"recipe_name": recipe_name, "recipe_id": recipe.id})

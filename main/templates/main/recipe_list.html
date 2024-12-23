@@ -7,7 +7,10 @@
 
     <ul>
     {% for recipe in page_obj %}
-        <li><a href="{% url 'recipe_details' recipe_id=recipe.id %}">{{ recipe.name }}</a></li>
+        <li>
+            <a href="{% url 'recipe_details' recipe_id=recipe.id %}">{{ recipe.name }}</a>
+            | <a href="{% url 'delete_recipe' recipe_id=recipe.id %}">вилучити</a>
+        </li>
     {% endfor %}
     </ul>
 

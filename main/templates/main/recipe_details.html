@@ -35,4 +35,6 @@
             <li>{{ tag.tag_text }}</li>
         {% endfor %}
     </ul>
+
+    <p><a href="{% url 'delete_recipe' recipe_id=recipe.id %}">Вилучити цей рецепт</a></p>
 {% endblock %}
