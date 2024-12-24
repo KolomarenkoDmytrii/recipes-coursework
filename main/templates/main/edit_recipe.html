@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагування рецепту{% endblock %}
+
+{% block content %}
+    <h1>Редагування рецепту "{{ recipe.name }}"</h2>
+
+    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+    <p><a href="{% url 'list_recipes' %}">До переліку рецептів</a></p>
+  
+    <form method="POST">
+        {% csrf_token %}
+        
+        <h2>Інформація</h2>
+        {{ recipe_form.as_p }}
+        <p>{{ info_error_message }}</p>
+        
+        <h2>Кроки</h2>
+        <div id="steps">
+            {% for step in steps %}
+                <p>
+                    <input type="text" name="step_description" value="{{ step.step_description }}" placeholder="Опис кроку" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
+        </div>
+        <button type="button" id="add_step_button">Додати крок</button>
+        <p>{{ step_error_message }}</p>
+        
+        <h2>Інгредієнти</h2>
+        <div id="ingredients">
+            {% for ingredient in ingredients %}
+                <p>
+                    <input type="text" name="ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" required>
+                    <input type="number" name="ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" required>
+                    <input type="text" name="ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
+        </div>
+        <button type="button" id="add_ingredient_button">Додати інгредієнт</button>
+        <p>{{ ingredient_error_message }}</p>
+        
+        <h2>Теги</h2>
+        <div id="tags">
+            {% for tag in tags %}
+                <p>
+                    <input type="text" name="tag_text" value="{{ tag.tag_text }}" placeholder="Тег" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
+        </div>
+        <button type="button" id="add_tag_button">Add another tag</button>
+        <p>{{ tag_error_message }}</p>
+        
+        <p><button type="submit">Зберегти зміни</button></p>
+    </form>
+
+    <script>
+        function addStepField() {
+            // const stepNumberInput = document.createElement('input');
+            // stepNumberInput.type = 'number';
+            // stepNumberInput.name = 'step_description';
+            // stepNumberInput.required = true;
+            // // stepNumberInput.value = stepNumber;
+            // stepNumberInput.placeholder = 'Номер кроку';
+
+            const stepDescriptionInput = document.createElement('input');
+            stepDescriptionInput.type = 'text';
+            stepDescriptionInput.name = 'step_description';
+            stepDescriptionInput.required = true;
+            // stepDescriptionInput.value = stepDescription;
+            stepDescriptionInput.placeholder = 'Опис кроку';
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Вилучити';
+
+            const stepsDiv = document.getElementById('steps');
+            const para = document.createElement('p');
+            para.appendChild(stepDescriptionInput);
+            para.appendChild(removeButton);
+            stepsDiv.appendChild(para);
+
+            removeButton.addEventListener('click', () => stepsDiv.removeChild(para));
+        }
+
+        function addIngredientField() {
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.name = 'ingredient_name';
+            nameInput.required = true;
+            nameInput.placeholder = 'Назва інгредієнту';
+
+            const volumeInput = document.createElement('input');
+            volumeInput.type = 'number';
+            volumeInput.step = '0.001';
+            volumeInput.name = 'ingredient_volume';
+            volumeInput.required = true;
+            volumeInput.placeholder = 'Обсяг';
+
+            const measureInput = document.createElement('input');
+            measureInput.type = 'text';
+            measureInput.name = 'ingredient_volume_measure';
+            measureInput.required = true;
+            measureInput.placeholder = 'Міра обсягу';
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Вилучити';
+
+            const ingredientsDiv = document.getElementById('ingredients');
+            const para = document.createElement('p');
+            para.appendChild(nameInput);
+            para.appendChild(volumeInput);
+            para.appendChild(measureInput);
+            para.appendChild(removeButton);
+            ingredientsDiv.appendChild(para);
+
+            removeButton.addEventListener('click', () => ingredientsDiv.removeChild(para));
+        }
+
+        function addTagField() {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'tag_text';
+            input.required = true;
+            input.placeholder = 'Тег';
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Вилучити';
+
+            const tagsDiv = document.getElementById('tags');
+            const para = document.createElement('p');
+            para.appendChild(input);
+            para.appendChild(removeButton);
+            tagsDiv.appendChild(para);
+
+            removeButton.addEventListener('click', () => tagsDiv.removeChild(para));
+        }
+
+        document.getElementById('add_step_button').addEventListener('click', addStepField);
+        document.getElementById('add_ingredient_button').addEventListener('click', addIngredientField);
+        document.getElementById('add_tag_button').addEventListener('click', addTagField);
+    </script>
+{% endblock %}
