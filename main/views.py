@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.forms import ModelForm
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 from . import forms
@@ -43,14 +44,14 @@ def create_recipe(request):
         ))
         for name, volume, measure in ingredients:
             if not forms.RecipeIngredientForm({"name": name, "volume": volume, "volume_measure": measure}).is_valid():
-                context["ingredient_error_message"] = "Помилка в описі інгредієнта"
+                context["ingredient_error_message"] = "Помилка в описі інгредієнтів"
                 is_error = True
                 break
 
         tags = request.POST.getlist("tag_text")
         for tag in tags:
             if not forms.RecipeTagForm({"tag_text": tag}).is_valid():
-                context["tag_error_message"] = "Помилка в заданні тегу"
+                context["tag_error_message"] = "Помилка в заданні тегів"
                 is_error = True
                 break
 
@@ -102,7 +103,6 @@ def recipe_details(request, recipe_id):
 @login_required
 def delete_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
-    # recipe = Recipe.objects.get(pk=recipe_id)
 
     if recipe.user != request.user:
         return render(request, "access_denied.html")
@@ -116,55 +116,6 @@ def delete_recipe(request, recipe_id):
         return render(request, "main/delete_recipe.html", {"recipe_name": recipe_name, "recipe_id": recipe.id})
 
 
-# @login_required
-# def edit_recipe(request, recipe_id):
-#     recipe = get_object_or_404(Recipe, pk=recipe_id)
-
-#     if recipe.user != request.user:
-#         return render(request, "access_denied.html")
-
-#     recipe_form = forms.RecipeForm(instance=recipe)
-#     step_formset = forms.RecipeStepFormSet(queryset=RecipeStep.objects.filter(recipe=recipe))
-#     tag_formset = forms.RecipeTagFormSet(queryset=RecipeTag.objects.filter(recipe=recipe))
-#     ingredient_formset = forms.RecipeIngredientFormSet(queryset=RecipeIngredient.objects.filter(recipe=recipe))
-
-#     if request.method == "POST":
-#         recipe_form = forms.RecipeForm(request.POST, instance=recipe)
-#         step_formset = forms.RecipeStepFormSet(request.POST)
-#         tag_formset = forms.RecipeTagFormSet(request.POST)
-#         ingredient_formset = forms.RecipeIngredientFormSet(request.POST)
-
-#         if recipe_form.is_valid() and step_formset.is_valid() and tag_formset.is_valid() and ingredient_formset.is_valid():
-#             # Збереження рецепту
-#             recipe_form.save()
-
-#             # Збереження кроків
-#             for form in step_formset:
-#                 step = form.save(commit=False)
-#                 step.recipe = recipe
-#                 step.save()
-
-#             # Збереження тегів
-#             for form in tag_formset:
-#                 tag = form.save(commit=False)
-#                 tag.recipe = recipe
-#                 tag.save()
-
-#             # Збереження інгредієнтів
-#             for form in ingredient_formset:
-#                 ingredient = form.save(commit=False)
-#                 ingredient.recipe = recipe
-#                 ingredient.save()
-
-#             return redirect("list_recipes")
-
-#     return render(request, "main/edit_recipe.html", {
-#         "recipe_form": recipe_form,
-#         "step_formset": step_formset,
-#         "tag_formset": tag_formset,
-#         "ingredient_formset": ingredient_formset,
-#         "recipe": recipe
-#     })
 @login_required
 def edit_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
@@ -172,73 +123,123 @@ def edit_recipe(request, recipe_id):
     if recipe.user != request.user:
         return render(request, "access_denied.html")
 
-    ingredients = RecipeIngredient.objects.filter(recipe=recipe)
-    steps = RecipeStep.objects.filter(recipe=recipe).order_by("step_number")
-    tags = RecipeTag.objects.filter(recipe=recipe)
-    
-    context = {}
-    context["ingredients"] = ingredients
-    context["steps"] = steps
-    context["tags"] = tags
-
     if request.method == "POST":
-        recipe_form = forms.RecipeForm(request.POST, instance=recipe)
-        context["recipe_form"] = recipe_form
         is_error = False
+        recipe_form = forms.RecipeForm(request.POST, instance=recipe)
+        step_formset = forms.RecipeStepFormSet(request.POST, instance=recipe)
+        tag_formset = forms.RecipeTagFormSet(request.POST, instance=recipe)
+        ingredient_formset = forms.RecipeIngredientFormSet(request.POST, instance=recipe)
 
+        context = {
+            "recipe_name": recipe.name,
+            "recipe_form": recipe_form,
+            "step_formset": step_formset,
+            "tag_formset": tag_formset,
+            "ingredient_formset": ingredient_formset,
+        }
+
+        # checking updated data for errors
         if not recipe_form.is_valid():
             context["info_error_message"] = "Помилка в інформації про рецепт"
             is_error = True
+        if not step_formset.is_valid():
+            context["step_error_message"] = "Помилка в описі кроків рецепту"
+            is_error = True
+        if not tag_formset.is_valid():
+            print("\ntag_formset:")
+            print(tag_formset._errors)
+            context["tag_error_message"] = "Помилка в заданні тегів"
+            is_error = True
+        if not ingredient_formset.is_valid():
+            print("\ningredient_formset:")
+            print(ingredient_formset._errors)
+            context["ingredient_error_message"] = "Помилка в описі інгредієнтів"
+            is_error = True
 
-        steps = request.POST.getlist("step_description")
-        for step in steps:
+        # checking new data for errors
+        new_steps = request.POST.getlist("new_step_description")
+        for step in new_steps:
             if not forms.RecipeStepForm({"step_description": step}).is_valid():
                 context["step_error_message"] = "Помилка в описі кроків рецепту"
                 is_error = True
                 break
 
-        ingredients = list(zip(
-            request.POST.getlist("ingredient_name"),
-            request.POST.getlist("ingredient_volume"),
-            request.POST.getlist("ingredient_volume_measure"),
+        new_ingredients = list(zip(
+            request.POST.getlist("new_ingredient_name"),
+            request.POST.getlist("new_ingredient_volume"),
+            request.POST.getlist("new_ingredient_volume_measure"),
         ))
-        for name, volume, measure in ingredients:
+        for name, volume, measure in new_ingredients:
             if not forms.RecipeIngredientForm({"name": name, "volume": volume, "volume_measure": measure}).is_valid():
-                context["ingredient_error_message"] = "Помилка в описі інгредієнта"
+                context["ingredient_error_message"] = "Помилка в описі інгредієнтів"
                 is_error = True
                 break
 
-        tags = request.POST.getlist("tag_text")
-        for tag in tags:
+        new_tags = request.POST.getlist("new_tag_text")
+        for tag in new_tags:
             if not forms.RecipeTagForm({"tag_text": tag}).is_valid():
-                context["tag_error_message"] = "Помилка в заданні тегу"
+                context["tag_error_message"] = "Помилка в заданні тегів"
                 is_error = True
                 break
 
         if is_error:
-            print(context)
-            return render(request, "main/create_recipe.html", context)
+            return render(request, "main/edit_recipe.html", context)
         else: # save data if no validation errors occured
+            # updated data
             recipe = recipe_form.save(commit=False)
             recipe.save()
 
-            RecipeStep.objects.filter(recipe=recipe).delete()
-            RecipeIngredient.objects.filter(recipe=recipe).delete()
-            RecipeTag.objects.filter(recipe=recipe).delete()
+            print("\nstep_formset saving...")
+            for form in step_formset:
+                step = form.save(commit=False)
+                step.recipe = recipe
+                # if data in a form marked for deletion
+                if form.cleaned_data["DELETE"]:
+                    step.delete()
+                else:
+                    step.save()
 
-            for step_number, step in enumerate(steps):
+            for form in tag_formset:
+                tag = form.save(commit=False)
+                tag.recipe = recipe
+                # if data in a form marked for deletion
+                if form.cleaned_data["DELETE"]:
+                    tag.delete()
+                else:
+                    tag.save()
+
+            for form in ingredient_formset:
+                ingredient = form.save(commit=False)
+                ingredient.recipe = recipe
+                # if data in a form marked for deletion
+                if form.cleaned_data["DELETE"]:
+                    ingredient.delete()
+                else:
+                    ingredient.save()
+
+            start = RecipeStep.objects.aggregate(Max("step_number", default=0))["step_number__max"]
+            for step_number, step in enumerate(new_steps, start):
                 RecipeStep.objects.create(recipe=recipe, step_number=step_number, step_description=step)
 
-            for name, volume, measure in ingredients:
+            for name, volume, measure in new_ingredients:
                 RecipeIngredient.objects.create(
                     recipe=recipe, name=name, volume=volume, volume_measure=measure
                 )
 
-            for tag in tags:
+            for tag in new_tags:
                 RecipeTag.objects.create(recipe=recipe, tag_text=tag)
 
             return render(request, "main/edit_recipe_success.html")
     else:
-        context["recipe_form"] = forms.RecipeForm(instance=recipe)
+        recipe_form = forms.RecipeForm(instance=recipe)
+        step_formset = forms.RecipeStepFormSet(instance=recipe)
+        tag_formset = forms.RecipeTagFormSet(instance=recipe)
+        ingredient_formset = forms.RecipeIngredientFormSet(instance=recipe)
 
-        return render(request, "main/edit_recipe.html", context)
+        return render(request, "main/edit_recipe.html", {
+            "recipe_name": recipe.name,
+            "recipe_form": recipe_form,
+            "step_formset": step_formset,
+            "tag_formset": tag_formset,
+            "ingredient_formset": ingredient_formset,
+        })

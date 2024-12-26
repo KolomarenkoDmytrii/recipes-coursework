@@ -3,7 +3,7 @@
 {% block title %}Редагування рецепту{% endblock %}
 
 {% block content %}
-    <h1>Редагування рецепту "{{ recipe.name }}"</h2>
+    <h1>Редагування рецепту "{{ recipe_name }}"</h2>
 
     <p><a href="{% url 'home' %}">На головну сторінку</a></p>
     <p><a href="{% url 'list_recipes' %}">До переліку рецептів</a></p>
@@ -16,39 +16,40 @@
         <p>{{ info_error_message }}</p>
         
         <h2>Кроки</h2>
+        <h3>Для оновлення</h3>
+        {{ step_formset.management_form }}
+        {% for form in step_formset %}
+            {{ form.id }}
+            {{ form.as_p }}
+        {% endfor %}
+        <h3>Для додання</h3>
         <div id="steps">
-            {% for step in steps %}
-                <p>
-                    <input type="text" name="step_description" value="{{ step.step_description }}" placeholder="Опис кроку" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
-            {% endfor %}
         </div>
         <button type="button" id="add_step_button">Додати крок</button>
         <p>{{ step_error_message }}</p>
         
         <h2>Інгредієнти</h2>
+        <h3>Для оновлення</h3>
+        {{ ingredient_formset.management_form }}
+        {% for form in ingredient_formset %}
+            {{ form.id }}
+            {{ form.as_p }}
+        {% endfor %}
+        <h3>Для додання</h3>
         <div id="ingredients">
-            {% for ingredient in ingredients %}
-                <p>
-                    <input type="text" name="ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" required>
-                    <input type="number" name="ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" required>
-                    <input type="text" name="ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
-            {% endfor %}
         </div>
         <button type="button" id="add_ingredient_button">Додати інгредієнт</button>
         <p>{{ ingredient_error_message }}</p>
         
         <h2>Теги</h2>
+        <h3>Для оновлення</h3>
+        {{ tag_formset.management_form }}
+        {% for form in tag_formset %}
+            {{ form.id }}
+            {{ form.as_p }}
+        {% endfor %}
+        <h3>Для додання</h3>
         <div id="tags">
-            {% for tag in tags %}
-                <p>
-                    <input type="text" name="tag_text" value="{{ tag.tag_text }}" placeholder="Тег" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
-            {% endfor %}
         </div>
         <button type="button" id="add_tag_button">Add another tag</button>
         <p>{{ tag_error_message }}</p>
@@ -58,18 +59,10 @@
 
     <script>
         function addStepField() {
-            // const stepNumberInput = document.createElement('input');
-            // stepNumberInput.type = 'number';
-            // stepNumberInput.name = 'step_description';
-            // stepNumberInput.required = true;
-            // // stepNumberInput.value = stepNumber;
-            // stepNumberInput.placeholder = 'Номер кроку';
-
             const stepDescriptionInput = document.createElement('input');
             stepDescriptionInput.type = 'text';
-            stepDescriptionInput.name = 'step_description';
+            stepDescriptionInput.name = 'new_step_description';
             stepDescriptionInput.required = true;
-            // stepDescriptionInput.value = stepDescription;
             stepDescriptionInput.placeholder = 'Опис кроку';
 
             const removeButton = document.createElement('button');
@@ -87,20 +80,20 @@
         function addIngredientField() {
             const nameInput = document.createElement('input');
             nameInput.type = 'text';
-            nameInput.name = 'ingredient_name';
+            nameInput.name = 'new_ingredient_name';
             nameInput.required = true;
             nameInput.placeholder = 'Назва інгредієнту';
 
             const volumeInput = document.createElement('input');
             volumeInput.type = 'number';
             volumeInput.step = '0.001';
-            volumeInput.name = 'ingredient_volume';
+            volumeInput.name = 'new_ingredient_volume';
             volumeInput.required = true;
             volumeInput.placeholder = 'Обсяг';
 
             const measureInput = document.createElement('input');
             measureInput.type = 'text';
-            measureInput.name = 'ingredient_volume_measure';
+            measureInput.name = 'new_ingredient_volume_measure';
             measureInput.required = true;
             measureInput.placeholder = 'Міра обсягу';
 
@@ -121,7 +114,7 @@
         function addTagField() {
             const input = document.createElement('input');
             input.type = 'text';
-            input.name = 'tag_text';
+            input.name = 'new_tag_text';
             input.required = true;
             input.placeholder = 'Тег';
 
