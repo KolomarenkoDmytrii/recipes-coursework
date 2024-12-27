@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Перелік рецептів{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+
+    <ul>
+    {% for recipe in recipes %}
+        <li>
+            <a href="{% url 'recipe_details' recipe_id=recipe.id %}">{{ recipe.name }}</a>
+            | {{ recipe.description|slice:"100" }}...
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

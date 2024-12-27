@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Пошук{% endblock %}
+
+{% block content %}
+    <h1>Меню пошуку</h1>
+
+    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+
+    <form method="get" action="{% url 'search_results' %}">
+        {{ search_form.as_p }}
+        <button type="submit">Шукати</button>
+    </form>
+{% endblock %}

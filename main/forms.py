@@ -1,9 +1,10 @@
-from django.forms import ModelForm, modelformset_factory, inlineformset_factory
+# from django.forms import Form, ModelForm, inlineformset_factory
+from django import forms
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 
 
-class RecipeForm(ModelForm):
+class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ["name", "description", "cooking_time", "category"]
@@ -16,48 +17,58 @@ class RecipeForm(ModelForm):
         }
 
 
-class RecipeIngredientForm(ModelForm):
+class RecipeIngredientForm(forms.ModelForm):
     class Meta:
         model = RecipeIngredient
         fields = ["name", "volume", "volume_measure"]
 
 
-class RecipeStepForm(ModelForm):
+class RecipeStepForm(forms.ModelForm):
     class Meta:
         model = RecipeStep
         fields = ["step_description"]
 
-class RecipeTagForm(ModelForm):
+
+class RecipeTagForm(forms.ModelForm):
     class Meta:
         model = RecipeTag
         fields = ["tag_text"]
-        
 
-RecipeStepFormSet = inlineformset_factory(
-    parent_model=Recipe, 
+
+RecipeStepFormSet = forms.inlineformset_factory(
+    parent_model=Recipe,
     model=RecipeStep,
     fields=["step_description"],
     can_delete=True,
     extra=0,
     labels={
         "step_description": "Опис кроку",
-    }
+    },
 )
 
 
-RecipeTagFormSet = inlineformset_factory(
+RecipeTagFormSet = forms.inlineformset_factory(
     parent_model=Recipe,
-    model=RecipeTag, 
+    model=RecipeTag,
     fields=["tag_text"],
     can_delete=True,
     extra=0,
 )
 
 
-RecipeIngredientFormSet = inlineformset_factory(
+RecipeIngredientFormSet = forms.inlineformset_factory(
     parent_model=Recipe,
     model=RecipeIngredient,
     fields=["name", "volume", "volume_measure"],
     can_delete=True,
     extra=0,
 )
+
+
+class SearchForm(forms.Form):
+    search_string = forms.CharField(required=True, label="Пошук")
+    search_in_names = forms.BooleanField(initial=True, required=False, label="Шукати за іменем")
+    search_in_descriptions = forms.BooleanField(required=False, label="Шукати за описом")
+    search_in_ingredients = forms.BooleanField(required=False, label="Шукати за інгредієнтом")
+    search_in_categories = forms.BooleanField(required=False, label="Шукати за категорією")
+    search_in_tags = forms.BooleanField(required=False, label="Шукати за тегом")
