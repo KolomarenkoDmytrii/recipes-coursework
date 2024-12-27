@@ -20,7 +20,6 @@
         <h3>Для оновлення</h3>
         {{ step_formset.management_form }}
         {% for form in step_formset %}
-            {{ form.id }}
             {{ form.as_p }}
         {% endfor %}
         <h3>Для додання</h3>
@@ -33,7 +32,6 @@
         <h3>Для оновлення</h3>
         {{ ingredient_formset.management_form }}
         {% for form in ingredient_formset %}
-            {{ form.id }}
             {{ form.as_p }}
         {% endfor %}
         <h3>Для додання</h3>
@@ -46,7 +44,6 @@
         <h3>Для оновлення</h3>
         {{ tag_formset.management_form }}
         {% for form in tag_formset %}
-            {{ form.id }}
             {{ form.as_p }}
         {% endfor %}
         <h3>Для додання</h3>

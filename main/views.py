@@ -4,6 +4,7 @@ from django.forms import ModelForm
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
+from django.db import transaction
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 from . import forms
@@ -116,6 +117,18 @@ def delete_recipe(request, recipe_id):
         return render(request, "main/delete_recipe.html", {"recipe_name": recipe_name, "recipe_id": recipe.id})
 
 
+def change_recipe_data_using_formset(formset, recipe):
+    """Update or delete objects that corresponds to entries in formset"""
+    for form in formset:
+        obj = form.save(commit=False)
+        obj.recipe = recipe
+        # if data in a form marked for deletion
+        if form.cleaned_data["DELETE"]:
+            obj.delete()
+        else:
+            obj.save()
+
+
 @login_required
 def edit_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
@@ -185,49 +198,27 @@ def edit_recipe(request, recipe_id):
         if is_error:
             return render(request, "main/edit_recipe.html", context)
         else: # save data if no validation errors occured
-            # updated data
-            recipe = recipe_form.save(commit=False)
-            recipe.save()
+            with transaction.atomic():
+                # updated data
+                recipe = recipe_form.save(commit=False)
+                recipe.save()
 
-            print("\nstep_formset saving...")
-            for form in step_formset:
-                step = form.save(commit=False)
-                step.recipe = recipe
-                # if data in a form marked for deletion
-                if form.cleaned_data["DELETE"]:
-                    step.delete()
-                else:
-                    step.save()
+                change_recipe_data_using_formset(step_formset, recipe)
+                change_recipe_data_using_formset(tag_formset, recipe)
+                change_recipe_data_using_formset(ingredient_formset, recipe)
 
-            for form in tag_formset:
-                tag = form.save(commit=False)
-                tag.recipe = recipe
-                # if data in a form marked for deletion
-                if form.cleaned_data["DELETE"]:
-                    tag.delete()
-                else:
-                    tag.save()
+                # new data
+                start = RecipeStep.objects.aggregate(Max("step_number", default=0))["step_number__max"]
+                for step_number, step in enumerate(new_steps, start):
+                    RecipeStep.objects.create(recipe=recipe, step_number=step_number, step_description=step)
 
-            for form in ingredient_formset:
-                ingredient = form.save(commit=False)
-                ingredient.recipe = recipe
-                # if data in a form marked for deletion
-                if form.cleaned_data["DELETE"]:
-                    ingredient.delete()
-                else:
-                    ingredient.save()
+                for name, volume, measure in new_ingredients:
+                    RecipeIngredient.objects.create(
+                        recipe=recipe, name=name, volume=volume, volume_measure=measure
+                    )
 
-            start = RecipeStep.objects.aggregate(Max("step_number", default=0))["step_number__max"]
-            for step_number, step in enumerate(new_steps, start):
-                RecipeStep.objects.create(recipe=recipe, step_number=step_number, step_description=step)
-
-            for name, volume, measure in new_ingredients:
-                RecipeIngredient.objects.create(
-                    recipe=recipe, name=name, volume=volume, volume_measure=measure
-                )
-
-            for tag in new_tags:
-                RecipeTag.objects.create(recipe=recipe, tag_text=tag)
+                for tag in new_tags:
+                    RecipeTag.objects.create(recipe=recipe, tag_text=tag)
 
             return render(request, "main/edit_recipe_success.html")
     else:
