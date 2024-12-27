@@ -31,34 +31,7 @@ class RecipeTagForm(ModelForm):
     class Meta:
         model = RecipeTag
         fields = ["tag_text"]
-
-
-# RecipeStepFormSet = modelformset_factory(
-#     model=RecipeStep, 
-#     form=RecipeStepForm,
-#     # fields=('step_number', 'step_description'),
-#     fields=("step_description",),
-#     can_delete=True,
-#     extra=0,
-# )
-
-
-# RecipeTagFormSet = modelformset_factory(
-#     model=RecipeTag,
-#     form=RecipeTagForm, 
-#     fields=("tag_text",),
-#     can_delete=True,
-#     extra=0,
-# )
-
-
-# RecipeIngredientFormSet = modelformset_factory(
-#     model=RecipeIngredient,
-#     form=RecipeIngredientForm,
-#     fields=("name", "volume", "volume_measure"),
-#     can_delete=True,
-#     extra=0,
-# )
+        
 
 RecipeStepFormSet = inlineformset_factory(
     parent_model=Recipe, 
