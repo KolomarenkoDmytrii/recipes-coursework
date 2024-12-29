@@ -16,6 +16,7 @@ class RecipeListView(ListView):
     def get_queryset(self):
         return Recipe.objects.filter(user=self.request.user).order_by("name")
 
+
 list_recipes = login_required(RecipeListView.as_view())
 
 
@@ -35,13 +36,9 @@ class SearchResultsView(ListView):
             if query.cleaned_data["search_in_names"]:
                 recipe_search_params.append(Q(name__icontains=search_string))
             if query.cleaned_data["search_in_descriptions"]:
-                recipe_search_params.append(
-                    Q(description__icontains=search_string)
-                )
+                recipe_search_params.append(Q(description__icontains=search_string))
             if query.cleaned_data["search_in_categories"]:
-                recipe_search_params.append(
-                    Q(category__icontains=search_string)
-                )
+                recipe_search_params.append(Q(category__icontains=search_string))
             if query.cleaned_data["search_in_ingredients"]:
                 recipe_search_params.append(
                     Q(recipeingredient__name__icontains=search_string)
@@ -57,11 +54,6 @@ class SearchResultsView(ListView):
                     recipe_search_params_combined = (
                         recipe_search_params_combined | param
                     )
-                print(
-                    "\nSearchResultsView.get_queryset() recipe_search_params_combined"
-                )
-                print(recipe_search_params_combined)
-                print()
 
                 return Recipe.objects.filter(
                     recipe_search_params_combined, user=self.request.user
@@ -70,6 +62,7 @@ class SearchResultsView(ListView):
                 return Recipe.objects.none()
         else:
             return Recipe.objects.none()
+
 
 search_results = login_required(SearchResultsView.as_view())
 
@@ -83,7 +76,7 @@ def search_menu(request):
 def create_recipe(request):
     if request.method == "POST":
         context = {}
-        recipe_form = forms.RecipeForm(request.POST)
+        recipe_form = forms.RecipeForm(request.POST, request.FILES)
         context["recipe_form"] = recipe_form
         is_error = False
 
@@ -91,7 +84,7 @@ def create_recipe(request):
             context["info_error_message"] = "Помилка в інформації про рецепт"
             is_error = True
 
-        steps = request.POST.getlist("step_description")
+        steps = request.POST.getlist("new_step_description")
         for step in steps:
             if not forms.RecipeStepForm({"step_description": step}).is_valid():
                 context["step_error_message"] = "Помилка в описі кроків рецепту"
@@ -100,9 +93,9 @@ def create_recipe(request):
 
         ingredients = list(
             zip(
-                request.POST.getlist("ingredient_name"),
-                request.POST.getlist("ingredient_volume"),
-                request.POST.getlist("ingredient_volume_measure"),
+                request.POST.getlist("new_ingredient_name"),
+                request.POST.getlist("new_ingredient_volume"),
+                request.POST.getlist("new_ingredient_volume_measure"),
             )
         )
         for name, volume, measure in ingredients:
@@ -113,7 +106,7 @@ def create_recipe(request):
                 is_error = True
                 break
 
-        tags = request.POST.getlist("tag_text")
+        tags = request.POST.getlist("new_tag_text")
         for tag in tags:
             if not forms.RecipeTagForm({"tag_text": tag}).is_valid():
                 context["tag_error_message"] = "Помилка в заданні тегів"
@@ -121,7 +114,6 @@ def create_recipe(request):
                 break
 
         if is_error:
-            print(context)
             return render(request, "main/create_recipe.html", context)
         else:  # save data if no validation errors occured
             with transaction.atomic():
@@ -151,7 +143,6 @@ def create_recipe(request):
 @login_required
 def recipe_details(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
-    # recipe = Recipe.objects.get(pk=recipe_id)
 
     if recipe.user != request.user:
         return render(request, "access_denied.html")
@@ -159,7 +150,6 @@ def recipe_details(request, recipe_id):
     ingredients = RecipeIngredient.objects.filter(recipe=recipe)
     steps = RecipeStep.objects.filter(recipe=recipe).order_by("step_number")
     tags = RecipeTag.objects.filter(recipe=recipe)
-    # tags = RecipeTag.objects.filter(recipe_id=recipe_id)
 
     return render(
         request,
@@ -211,7 +201,7 @@ def edit_recipe(request, recipe_id):
 
     if request.method == "POST":
         is_error = False
-        recipe_form = forms.RecipeForm(request.POST, instance=recipe)
+        recipe_form = forms.RecipeForm(request.POST, request.FILES, instance=recipe)
         step_formset = forms.RecipeStepFormSet(request.POST, instance=recipe)
         tag_formset = forms.RecipeTagFormSet(request.POST, instance=recipe)
         ingredient_formset = forms.RecipeIngredientFormSet(

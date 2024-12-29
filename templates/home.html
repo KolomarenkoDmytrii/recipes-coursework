@@ -6,7 +6,7 @@
     <h1>Головна сторінка</h1>
 
     {% if user.is_authenticated %}
-        <p>Hi {{ user.username }}!</p>
+        <p>Вітаємо, {{ user.username }}!</p>
 
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}

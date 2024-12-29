@@ -7,13 +7,24 @@ from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ["name", "description", "cooking_time", "category"]
+        fields = [
+            "name",
+            "description",
+            "cooking_time",
+            "category",
+            "image_1",
+            "image_2",
+            "image_3",
+        ]
 
         labels = {
             "name": "Назва страви",
             "description": "Опис",
             "cooking_time": "Час приготування, хв",
             "category": "Категорія",
+            "image_1": "Зображення страви (1)",
+            "image_2": "Зображення страви (2)",
+            "image_3": "Зображення страви (3)",
         }
 
 
@@ -67,8 +78,16 @@ RecipeIngredientFormSet = forms.inlineformset_factory(
 
 class SearchForm(forms.Form):
     search_string = forms.CharField(required=True, label="Пошук")
-    search_in_names = forms.BooleanField(initial=True, required=False, label="Шукати за іменем")
-    search_in_descriptions = forms.BooleanField(required=False, label="Шукати за описом")
-    search_in_ingredients = forms.BooleanField(required=False, label="Шукати за інгредієнтом")
-    search_in_categories = forms.BooleanField(required=False, label="Шукати за категорією")
+    search_in_names = forms.BooleanField(
+        initial=True, required=False, label="Шукати за іменем"
+    )
+    search_in_descriptions = forms.BooleanField(
+        required=False, label="Шукати за описом"
+    )
+    search_in_ingredients = forms.BooleanField(
+        required=False, label="Шукати за інгредієнтом"
+    )
+    search_in_categories = forms.BooleanField(
+        required=False, label="Шукати за категорією"
+    )
     search_in_tags = forms.BooleanField(required=False, label="Шукати за тегом")

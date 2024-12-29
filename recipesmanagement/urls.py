@@ -18,6 +18,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
@@ -27,4 +29,4 @@ urlpatterns = [
     # https://docs.djangoproject.com/en/5.1/topics/auth/default/#module-django.contrib.auth.views
     path("accounts/", include("django.contrib.auth.urls")),
     path("admin/", admin.site.urls),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

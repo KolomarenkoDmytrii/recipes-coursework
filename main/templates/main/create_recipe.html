@@ -8,7 +8,7 @@
 
     <p><a href="{% url 'home' %}">Перейти до головної сторінки</a></p>
   
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
         <h2>Інформація</h2>

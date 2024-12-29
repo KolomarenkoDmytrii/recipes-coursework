@@ -9,7 +9,7 @@
     <p><a href="{% url 'home' %}">На головну сторінку</a></p>
     <p><a href="{% url 'list_recipes' %}">До переліку рецептів</a></p>
   
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
         <h2>Інформація</h2>
