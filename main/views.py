@@ -1,11 +1,11 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import ListView
-from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.db import transaction
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
+from .ai import get_generated_recipe
 from . import forms
 
 
@@ -306,4 +306,46 @@ def edit_recipe(request, recipe_id):
                 "tag_formset": tag_formset,
                 "ingredient_formset": ingredient_formset,
             },
+        )
+
+
+@login_required
+def generate_recipe(request):
+    if request.method == "POST":
+        form = forms.RecipeGenerationForm(request.POST)
+        if form.is_valid():
+            recipe_data = get_generated_recipe(
+                form.cleaned_data["ingredients_description"],
+                form.cleaned_data["recipe_description"],
+            )
+
+            recipe_info_form = forms.RecipeForm(
+                {
+                    "name": recipe_data["name"],
+                    "description": recipe_data["description"],
+                    "cooking_time": recipe_data["cooking_time_in_minutes"],
+                    "category": recipe_data["category"],
+                }
+            )
+
+            return render(
+                request,
+                "main/generating_recipe_result.html",
+                {
+                    "recipe": recipe_data,
+                    "recipe_info_form": recipe_info_form,
+                    "generation_input_form": form,
+                },
+            )
+        else:
+            return render(
+                request,
+                "main/generating_recipe_input.html",
+                {"input_form": forms.RecipeGenerationForm()},
+            )
+    else:
+        return render(
+            request,
+            "main/generating_recipe_input.html",
+            {"input_form": forms.RecipeGenerationForm()},
         )

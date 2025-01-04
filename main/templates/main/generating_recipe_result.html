@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Створення рецепту{% endblock %}
+
+{% block content %}
+    <h1>Збереження згенерованого рецепту</h1>
+
+    <p><a href="{% url 'home' %}">Перейти до головної сторінки</a></p>
+
+    <h2>Генерування рецепту</h2>
+    <form method="POST" action="{% url 'generate_recipe' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ generation_input_form.as_p }}
+        <button type="submit">Перегенерувати</button>
+    </form>
+  
+    <h2>Редагування рецепту</h2>
+    <form method="POST" action="{% url 'create_recipe' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <h3>Інформація</h3>
+        {{ recipe_info_form.as_p }}
+        
+        <h3>Кроки</h3>
+        <div id="steps">
+            {% for step in recipe.steps %}
+                <p>
+                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
+        </div>
+        <button type="button" id="add_step_button">Додати крок</button>
+        
+        <h3>Інгредієнти</h3>
+        <div id="ingredients">
+            {% for ingredient in recipe.ingredients %}
+                <p>
+                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" required>
+                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" required>
+                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
+        </div>
+        <button type="button" id="add_ingredient_button">Додати інгредієнт</button>
+        
+        <h3>Теги</h3>
+        <div id="tags">
+        </div>
+        <button type="button" id="add_tag_button">Додати тег</button>
+        
+        <p><button type="submit">Додати рецепт</button></p>
+    </form>
+{% endblock %}
+
+{% block script %}<script src="{% static 'main/js/recipe_modifying_form.js' %}"></script>{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Генерування рецепту{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+
+    <h1>Генерування рецепту</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ input_form.as_p }}
+        <button type="submit">Згенерувати</button>
+    </form>
+{% endblock %}

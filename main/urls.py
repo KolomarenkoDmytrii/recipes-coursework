@@ -8,6 +8,7 @@ urlpatterns = [
     path("recipes/list", views.list_recipes, name="list_recipes"),
     path("recipes/search_menu", views.search_menu, name="search_menu"),
     path("recipes/search", views.search_results, name="search_results"),
+    path("recipes/generate", views.generate_recipe, name="generate_recipe"),
     path(
         "recipes/<int:recipe_id>/details", views.recipe_details, name="recipe_details"
     ),

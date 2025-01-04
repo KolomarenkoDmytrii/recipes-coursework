@@ -1,4 +1,3 @@
-# from django.forms import Form, ModelForm, inlineformset_factory
 from django import forms
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
@@ -91,3 +90,8 @@ class SearchForm(forms.Form):
         required=False, label="Шукати за категорією"
     )
     search_in_tags = forms.BooleanField(required=False, label="Шукати за тегом")
+
+
+class RecipeGenerationForm(forms.Form):
+    ingredients_description = forms.CharField(required=True, label="Опис інгредієнтів")
+    recipe_description = forms.CharField(required=True, label="Опис рецепту")
