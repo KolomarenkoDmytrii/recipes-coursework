@@ -1,11 +1,7 @@
 import json
 
-# from django.conf import settings
-
 import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
-
-# genai.configure(api_key=settings.GEMINI_API_KEY)
 
 generation_config = {
     "temperature": 1,
@@ -81,18 +77,3 @@ def get_generated_recipe(ingredients_description, recipe_description):
 
     response = model.generate_content(prompt)
     return json.loads(response.text)
-
-
-#     return json.loads(
-#         '{"category": "Обсмажена риба", "cooking_time_in_minutes": 20, "description": \
-# "Смачний рецепт обсмаженої риби з хрусткою скоринкою.", "ingredients": [{"name": \
-# "Риб\'яче філе", "volume": 500, "volume_measure": "г"}, {"name": "Яйце", "volume": 2, \
-# "volume_measure": "шт"}, {"name": "Борошно", "volume": 100, "volume_measure": "г"}], \
-# "name": "Обсмажена риба", "steps": ["Підготуйте риб\'яче філе: вимийте, \
-# обсушіть паперовим рушником та наріжте на порційні шматки.", \
-# "У мисці збийте яйця виделкою.", "У іншій мисці насипте борошно.", \
-# "Обваляйте кожен шматок риби спочатку в борошні, потім в яйці.", "Розігрійте олію \
-# на сковороді на середньому вогні.", "Обсмажте рибу з обох боків до золотистої скоринки \
-# (по 3-4 хвилини з кожного боку).", "Готову рибу викладіть на паперовий рушник, \
-# щоб увібрався зайвий жир.", "Подавайте гарячою з улюбленим гарніром."]}'
-#     )
