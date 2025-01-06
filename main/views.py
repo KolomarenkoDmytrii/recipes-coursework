@@ -1,8 +1,9 @@
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.db import transaction
+from django.http import HttpResponseRedirect
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 from .ai import get_generated_recipe
@@ -14,7 +15,38 @@ class RecipeListView(ListView):
     model = Recipe
 
     def get_queryset(self):
-        return Recipe.objects.filter(user=self.request.user).order_by("name")
+        sort_by = (
+            "-" if self.request.session.get("is_descending", False) else ""
+        ) + self.request.session.get("ordering", "name")
+
+        return Recipe.objects.filter(user=self.request.user).order_by(sort_by)
+
+    def get(self, request, *args, **kwargs):
+        sort_query = forms.SortRecipeListForm(request.GET)
+        if sort_query.is_valid():
+            # save form data in the session
+            request.session["ordering"] = sort_query.cleaned_data.get(
+                "ordering", "name"
+            )
+            request.session["is_descending"] = sort_query.cleaned_data.get(
+                "is_descending"
+            )
+
+            # redirect to the same page after form submission to avoid resubmission
+            return HttpResponseRedirect(request.path_info)
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sort_form"] = forms.SortRecipeListForm(
+            self.request.GET,
+            initial={
+                "ordering": self.request.session["ordering"],
+                "is_descending": self.request.session["is_descending"],
+            },
+        )
+        return context
 
 
 list_recipes = login_required(RecipeListView.as_view())
@@ -27,7 +59,6 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         query = forms.SearchForm(self.request.GET)
-        recipes = Recipe.objects.none()
 
         if query.is_valid():
             search_string = query.cleaned_data["search_string"]
@@ -58,8 +89,8 @@ class SearchResultsView(ListView):
                 return Recipe.objects.filter(
                     recipe_search_params_combined, user=self.request.user
                 )
-            else:
-                return Recipe.objects.none()
+
+            return Recipe.objects.none()
         else:
             return Recipe.objects.none()
 
@@ -123,26 +154,27 @@ def create_recipe(request):
 
         if is_error:
             return render(request, "main/create_recipe.html", context)
-        else:  # save data if no validation errors occured
-            with transaction.atomic():
-                recipe = recipe_form.save(commit=False)
-                recipe.user = request.user
-                recipe.save()
 
-                for step_number, step in enumerate(steps):
-                    RecipeStep.objects.create(
-                        recipe=recipe, step_number=step_number, step_description=step
-                    )
+        # save data if no validation errors occured
+        with transaction.atomic():
+            recipe = recipe_form.save(commit=False)
+            recipe.user = request.user
+            recipe.save()
 
-                for name, volume, measure in ingredients:
-                    RecipeIngredient.objects.create(
-                        recipe=recipe, name=name, volume=volume, volume_measure=measure
-                    )
+            for step_number, step in enumerate(steps):
+                RecipeStep.objects.create(
+                    recipe=recipe, step_number=step_number, step_description=step
+                )
 
-                for tag in tags:
-                    RecipeTag.objects.create(recipe=recipe, tag_text=tag)
+            for name, volume, measure in ingredients:
+                RecipeIngredient.objects.create(
+                    recipe=recipe, name=name, volume=volume, volume_measure=measure
+                )
 
-            return render(request, "main/create_recipe_success.html")
+            for tag in tags:
+                RecipeTag.objects.create(recipe=recipe, tag_text=tag)
+
+        return render(request, "main/create_recipe_success.html")
     else:
         recipe_form = forms.RecipeForm()
         return render(request, "main/create_recipe.html", {"recipe_form": recipe_form})
@@ -180,12 +212,12 @@ def delete_recipe(request, recipe_id):
         return render(
             request, "main/delete_recipe_success.html", {"recipe_name": recipe_name}
         )
-    else:
-        return render(
-            request,
-            "main/delete_recipe.html",
-            {"recipe_name": recipe_name, "recipe_id": recipe.id},
-        )
+
+    return render(
+        request,
+        "main/delete_recipe.html",
+        {"recipe_name": recipe_name, "recipe_id": recipe.id},
+    )
 
 
 def change_recipe_data_using_formset(formset, recipe):
@@ -278,34 +310,35 @@ def edit_recipe(request, recipe_id):
 
         if is_error:
             return render(request, "main/edit_recipe.html", context)
-        else:  # save data if no validation errors occured
-            with transaction.atomic():
-                # updated data
-                recipe = recipe_form.save(commit=False)
-                recipe.save()
 
-                change_recipe_data_using_formset(step_formset, recipe)
-                change_recipe_data_using_formset(tag_formset, recipe)
-                change_recipe_data_using_formset(ingredient_formset, recipe)
+        # save data if no validation errors occured
+        with transaction.atomic():
+            # updated data
+            recipe = recipe_form.save(commit=False)
+            recipe.save()
 
-                # new data
-                start = RecipeStep.objects.aggregate(Max("step_number", default=0))[
-                    "step_number__max"
-                ]
-                for step_number, step in enumerate(new_steps, start):
-                    RecipeStep.objects.create(
-                        recipe=recipe, step_number=step_number, step_description=step
-                    )
+            change_recipe_data_using_formset(step_formset, recipe)
+            change_recipe_data_using_formset(tag_formset, recipe)
+            change_recipe_data_using_formset(ingredient_formset, recipe)
 
-                for name, volume, measure in new_ingredients:
-                    RecipeIngredient.objects.create(
-                        recipe=recipe, name=name, volume=volume, volume_measure=measure
-                    )
+            # new data
+            start = RecipeStep.objects.aggregate(Max("step_number", default=0))[
+                "step_number__max"
+            ]
+            for step_number, step in enumerate(new_steps, start):
+                RecipeStep.objects.create(
+                    recipe=recipe, step_number=step_number, step_description=step
+                )
 
-                for tag in new_tags:
-                    RecipeTag.objects.create(recipe=recipe, tag_text=tag)
+            for name, volume, measure in new_ingredients:
+                RecipeIngredient.objects.create(
+                    recipe=recipe, name=name, volume=volume, volume_measure=measure
+                )
 
-            return render(request, "main/edit_recipe_success.html")
+            for tag in new_tags:
+                RecipeTag.objects.create(recipe=recipe, tag_text=tag)
+
+        return render(request, "main/edit_recipe_success.html")
     else:
         recipe_form = forms.RecipeForm(instance=recipe)
         step_formset = forms.RecipeStepFormSet(instance=recipe)
@@ -353,15 +386,15 @@ def generate_recipe(request):
                     "generation_input_form": form,
                 },
             )
-        else:
-            return render(
-                request,
-                "main/generating_recipe_input.html",
-                {"input_form": form},
-            )
-    else:
+
         return render(
             request,
             "main/generating_recipe_input.html",
-            {"input_form": forms.RecipeGenerationForm()},
+            {"input_form": form},
         )
+
+    return render(
+        request,
+        "main/generating_recipe_input.html",
+        {"input_form": forms.RecipeGenerationForm()},
+    )

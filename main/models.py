@@ -34,7 +34,7 @@ class RecipeTag(models.Model):
     tag_text = models.CharField(max_length=80)
 
     class Meta:
-        unique_together = ("recipe", "tag_text")
+        unique_together = ["recipe", "tag_text"]
 
 
 class RecipeIngredient(models.Model):

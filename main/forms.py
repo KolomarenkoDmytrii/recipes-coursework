@@ -95,3 +95,18 @@ class SearchForm(forms.Form):
 class RecipeGenerationForm(forms.Form):
     ingredients_description = forms.CharField(required=True, label="Опис інгредієнтів")
     recipe_description = forms.CharField(required=True, label="Опис рецепту")
+
+
+class SortRecipeListForm(forms.Form):
+    ordering = forms.ChoiceField(
+        choices=[
+            ("name", "За назвою"),
+            ("cooking_time", "За часом приготування"),
+            ("category", "За категорією"),
+            ("created_at", "За часом створення"),
+            ("updated_at", "За часом оновлення"),
+        ],
+        label="За чим сортувати",
+        initial="name",
+    )
+    is_descending = forms.BooleanField(required=False, label="У спадному порядку")
