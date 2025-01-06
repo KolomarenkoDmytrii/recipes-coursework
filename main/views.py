@@ -80,17 +80,6 @@ def create_recipe(request):
         context["recipe_form"] = recipe_form
         is_error = False
 
-        if not recipe_form.is_valid():
-            context["info_error_message"] = "Помилка в інформації про рецепт"
-            is_error = True
-
-        steps = request.POST.getlist("new_step_description")
-        for step in steps:
-            if not forms.RecipeStepForm({"step_description": step}).is_valid():
-                context["step_error_message"] = "Помилка в описі кроків рецепту"
-                is_error = True
-                break
-
         ingredients = list(
             zip(
                 request.POST.getlist("new_ingredient_name"),
@@ -98,6 +87,26 @@ def create_recipe(request):
                 request.POST.getlist("new_ingredient_volume_measure"),
             )
         )
+        steps = request.POST.getlist("new_step_description")
+        tags = request.POST.getlist("new_tag_text")
+
+        context["new_ingredients"] = [
+            {"name": name, "volume": volume, "volume_measure": measure}
+            for name, volume, measure in ingredients
+        ]
+        context["new_steps"] = steps
+        context["new_tags"] = tags
+
+        if not recipe_form.is_valid():
+            context["info_error_message"] = "Помилка в інформації про рецепт"
+            is_error = True
+
+        for step in steps:
+            if not forms.RecipeStepForm({"step_description": step}).is_valid():
+                context["step_error_message"] = "Помилка в описі кроків рецепту"
+                is_error = True
+                break
+
         for name, volume, measure in ingredients:
             if not forms.RecipeIngredientForm(
                 {"name": name, "volume": volume, "volume_measure": measure}
@@ -106,7 +115,6 @@ def create_recipe(request):
                 is_error = True
                 break
 
-        tags = request.POST.getlist("new_tag_text")
         for tag in tags:
             if not forms.RecipeTagForm({"tag_text": tag}).is_valid():
                 context["tag_error_message"] = "Помилка в заданні тегів"
@@ -216,6 +224,23 @@ def edit_recipe(request, recipe_id):
             "ingredient_formset": ingredient_formset,
         }
 
+        new_ingredients = list(
+            zip(
+                request.POST.getlist("new_ingredient_name"),
+                request.POST.getlist("new_ingredient_volume"),
+                request.POST.getlist("new_ingredient_volume_measure"),
+            )
+        )
+        new_steps = request.POST.getlist("new_step_description")
+        new_tags = request.POST.getlist("new_tag_text")
+
+        context["new_ingredients"] = [
+            {"name": name, "volume": volume, "volume_measure": measure}
+            for name, volume, measure in new_ingredients
+        ]
+        context["new_steps"] = new_steps
+        context["new_tags"] = new_tags
+
         # checking updated data for errors
         if not recipe_form.is_valid():
             context["info_error_message"] = "Помилка в інформації про рецепт"
@@ -231,20 +256,12 @@ def edit_recipe(request, recipe_id):
             is_error = True
 
         # checking new data for errors
-        new_steps = request.POST.getlist("new_step_description")
         for step in new_steps:
             if not forms.RecipeStepForm({"step_description": step}).is_valid():
                 context["step_error_message"] = "Помилка в описі кроків рецепту"
                 is_error = True
                 break
 
-        new_ingredients = list(
-            zip(
-                request.POST.getlist("new_ingredient_name"),
-                request.POST.getlist("new_ingredient_volume"),
-                request.POST.getlist("new_ingredient_volume_measure"),
-            )
-        )
         for name, volume, measure in new_ingredients:
             if not forms.RecipeIngredientForm(
                 {"name": name, "volume": volume, "volume_measure": measure}
@@ -253,7 +270,6 @@ def edit_recipe(request, recipe_id):
                 is_error = True
                 break
 
-        new_tags = request.POST.getlist("new_tag_text")
         for tag in new_tags:
             if not forms.RecipeTagForm({"tag_text": tag}).is_valid():
                 context["tag_error_message"] = "Помилка в заданні тегів"
@@ -341,7 +357,7 @@ def generate_recipe(request):
             return render(
                 request,
                 "main/generating_recipe_input.html",
-                {"input_form": forms.RecipeGenerationForm()},
+                {"input_form": form},
             )
     else:
         return render(

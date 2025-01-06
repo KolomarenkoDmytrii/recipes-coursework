@@ -17,18 +17,38 @@
         
         <h2>Кроки</h2>
         <div id="steps">
+            {% for step in new_steps %}
+                <p>
+                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
         </div>
         <button type="button" id="add_step_button">Додати крок</button>
         <p>{{ step_error_message }}</p>
         
         <h2>Інгредієнти</h2>
         <div id="ingredients">
+            {% for ingredient in new_ingredients %}
+                <p>
+                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" required>
+                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" required>
+                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
         </div>
         <button type="button" id="add_ingredient_button">Додати інгредієнт</button>
         <p>{{ ingredient_error_message }}</p>
         
         <h2>Теги</h2>
         <div id="tags">
+            {% for tag in new_tags %}
+                <p>
+                    <input type="text" name="new_tag_text" value="{{ tag }}" placeholder="Опис кроку" required>
+                    <button onclick="this.parentNode.remove()">Вилучити</button>
+                </p>
+            {% endfor %}
         </div>
         <button type="button" id="add_tag_button">Додати тег</button>
         <p>{{ tag_error_message }}</p>

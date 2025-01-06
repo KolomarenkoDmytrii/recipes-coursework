@@ -12,7 +12,6 @@
     <p>{{ recipe.description }}</p>
     <p>Час приготування, хв: {{ recipe.cooking_time }}</p>
     <p>Категорія: {{ recipe.category }}</p>
-    <p>Зображення:</p>
     <ul>
         {% if recipe.image_1 %}
             <li><img src="{{ recipe.image_1.url }}" width="256"></li>
