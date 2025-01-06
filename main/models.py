@@ -1,9 +1,12 @@
 import os
+import uuid
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 
+def get_recipe_image_path(instance, filename):
+    return f"recipes/{str(uuid.uuid4())}_{filename}"
 
 # Create your models here.
 class Recipe(models.Model):
@@ -13,9 +16,9 @@ class Recipe(models.Model):
     # in minutes
     cooking_time = models.PositiveIntegerField()
     category = models.CharField(max_length=128)
-    image_1 = models.ImageField(upload_to="recipes", blank=True, default="")
-    image_2 = models.ImageField(upload_to="recipes", blank=True, default="")
-    image_3 = models.ImageField(upload_to="recipes", blank=True, default="")
+    image_1 = models.ImageField(upload_to=get_recipe_image_path, blank=True, default="")
+    image_2 = models.ImageField(upload_to=get_recipe_image_path, blank=True, default="")
+    image_3 = models.ImageField(upload_to=get_recipe_image_path, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -81,15 +84,15 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
         new_image_3 = instance.image_3
 
         if not old_image_1 == new_image_1:
-            if os.path.isfile(old_image_1.path):
+            if old_image_1 and os.path.isfile(old_image_1.path):
                 os.remove(old_image_1.path)
 
         if not old_image_2 == new_image_2:
-            if os.path.isfile(old_image_2.path):
+            if old_image_2 and os.path.isfile(old_image_2.path):
                 os.remove(old_image_2.path)
 
         if not old_image_3 == new_image_3:
-            if os.path.isfile(old_image_3.path):
+            if old_image_3 and os.path.isfile(old_image_3.path):
                 os.remove(old_image_3.path)
     except sender.DoesNotExist:
         return False
