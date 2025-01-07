@@ -18,6 +18,7 @@
         {% for recipe in page_obj %}
             <tr>
                 <td><a href="{% url 'recipe_details' recipe_id=recipe.id %}">{{ recipe.name }}</a></td>
+                <td>{{ recipe.description|slice:"50" }}...</td>
                 <td><a href="{% url 'delete_recipe' recipe_id=recipe.id %}">вилучити</a></td>
                 <td><a href="{% url 'edit_recipe' recipe_id=recipe.id %}">редагувати</a></td>
             </tr>
