@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
-# import google.generativeai as genai
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -45,10 +43,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # "main",
-    # "accounts",
-    "main.apps.MainConfig",
-    "accounts.apps.AccountsConfig",
+    "crispy_forms",
+    "crispy_bootstrap5",
+
+    "main",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -146,4 +145,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-# genai.configure(api_key=GEMINI_API_KEY)
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"

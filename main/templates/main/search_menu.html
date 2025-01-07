@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Пошук{% endblock %}
 
@@ -8,7 +9,7 @@
     <p><a href="{% url 'home' %}">На головну сторінку</a></p>
 
     <form method="get" action="{% url 'search_results' %}">
-        {{ search_form.as_p }}
-        <button type="submit">Шукати</button>
+        {{ search_form|crispy}}
+        <button type="submit" class="btn btn-primary">Шукати</button>
     </form>
 {% endblock %}
