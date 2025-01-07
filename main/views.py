@@ -17,29 +17,18 @@ class RecipeListView(ListView):
 
     def get_queryset(self):
         sort_by = (
-            "-" if self.request.session.get("is_descending", False) else ""
-        ) + self.request.session.get("ordering", "name")
+            "-" if self.request.GET.get("is_descending", False) else ""
+        ) + self.request.GET.get("ordering", "name")
 
         return Recipe.objects.filter(user=self.request.user).order_by(sort_by)
-
-    def get(self, request, *args, **kwargs):
-        sort_query = forms.SortRecipeListForm(request.GET)
-        if sort_query.is_valid():
-            request.session["ordering"] = sort_query.cleaned_data["ordering"]
-            request.session["is_descending"] = sort_query.cleaned_data["is_descending"]
-
-            # redirect to the same page after form submission to avoid resubmission
-            return HttpResponseRedirect(request.path_info)
-
-        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["sort_form"] = forms.SortRecipeListForm(
             initial={
-                "ordering": self.request.session.get("ordering", "name"),
-                "is_descending": self.request.session.get("is_descending", False),
-            },
+                "ordering": self.request.GET.get("ordering", "name"),
+                "is_descending": self.request.GET.get("is_descending", False),
+            }
         )
         return context
 
