@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load main_tags %}
 
 {% block title %}Перелік рецептів{% endblock %}
 
@@ -13,4 +14,15 @@
         </li>
     {% endfor %}
     </ul>
+
+    <p>
+        <a href="?{% param_replace page=1 %}">&laquo; на початок</a>
+        {% if page_obj.has_previous %}
+            | <a href="?{% param_replace page=page_obj.previous_page_number %}">назад</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            | <a href="?{% param_replace page=page_obj.next_page_number %}">далі</a>
+            | <a href="?{% param_replace page=page_obj.paginator.num_pages  %}">на кінець &raquo;</a></li>
+        {% endif %}
+    </p>
 {% endblock %}

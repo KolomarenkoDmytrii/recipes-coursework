@@ -13,6 +13,7 @@ from . import forms
 class RecipeListView(ListView):
     paginate_by = 5
     model = Recipe
+    template_name = "main/recipe_list.html"
 
     def get_queryset(self):
         sort_by = (
@@ -24,13 +25,8 @@ class RecipeListView(ListView):
     def get(self, request, *args, **kwargs):
         sort_query = forms.SortRecipeListForm(request.GET)
         if sort_query.is_valid():
-            # save form data in the session
-            request.session["ordering"] = sort_query.cleaned_data.get(
-                "ordering", "name"
-            )
-            request.session["is_descending"] = sort_query.cleaned_data.get(
-                "is_descending"
-            )
+            request.session["ordering"] = sort_query.cleaned_data["ordering"]
+            request.session["is_descending"] = sort_query.cleaned_data["is_descending"]
 
             # redirect to the same page after form submission to avoid resubmission
             return HttpResponseRedirect(request.path_info)
@@ -40,10 +36,9 @@ class RecipeListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["sort_form"] = forms.SortRecipeListForm(
-            self.request.GET,
             initial={
-                "ordering": self.request.session["ordering"],
-                "is_descending": self.request.session["is_descending"],
+                "ordering": self.request.session.get("ordering", "name"),
+                "is_descending": self.request.session.get("is_descending", False),
             },
         )
         return context
@@ -56,6 +51,7 @@ class SearchResultsView(ListView):
     model = Recipe
     template_name = "main/search_results.html"
     context_object_name = "recipes"
+    paginate_by = 5
 
     def get_queryset(self):
         query = forms.SearchForm(self.request.GET)
@@ -88,7 +84,7 @@ class SearchResultsView(ListView):
 
                 return Recipe.objects.filter(
                     recipe_search_params_combined, user=self.request.user
-                )
+                ).order_by("name")
 
             return Recipe.objects.none()
         else:
