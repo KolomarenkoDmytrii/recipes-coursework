@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}Створення рецепту{% endblock %}
 
@@ -12,7 +13,7 @@
         {% csrf_token %}
         
         <h2>Інформація</h2>
-        {{ recipe_form.as_p }}
+        {{ recipe_form|crispy }}
         <p>{{ info_error_message }}</p>
         
         <h2>Кроки</h2>
