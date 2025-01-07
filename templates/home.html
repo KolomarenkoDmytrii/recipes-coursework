@@ -10,7 +10,7 @@
 
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit">Вийти з облікового запису</button>
+            <button type="submit" class="btn btn-link">Вийти з облікового запису</button>
         </form>
 
         <p><a href="{% url 'password_change' %}">Змінити пароль</a></p>
