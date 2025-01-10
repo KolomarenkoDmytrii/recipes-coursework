@@ -9,5 +9,6 @@
 <ul>
     <li><a href="{% url 'home' %}">головної сторінки</a></li>
     <li><a href="{% url 'create_recipe' %}">створення рецепту</a></li>
+    <li><a href="{% url 'recipe_details' recipe_id=recipe_id %}">до створеного рецепту</a></li>
 </ul>
 {% endblock %}
