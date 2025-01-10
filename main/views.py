@@ -73,7 +73,7 @@ class SearchResultsView(ListView):
 
                 return Recipe.objects.filter(
                     recipe_search_params_combined, user=self.request.user
-                ).order_by("name")
+                ).distinct().order_by("name")
 
             return Recipe.objects.none()
         else:
