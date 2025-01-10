@@ -14,6 +14,7 @@ function addStepField() {
     const para = document.createElement("p");
     para.appendChild(stepDescriptionInput);
     para.appendChild(removeButton);
+    para.className = "d-inline";
     stepsDiv.appendChild(para);
 
     removeButton.addEventListener("click", () => stepsDiv.removeChild(para));
