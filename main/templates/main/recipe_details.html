@@ -12,15 +12,15 @@
     <p>{{ recipe.description }}</p>
     <p>Час приготування, хв: {{ recipe.cooking_time }}</p>
     <p>Категорія: {{ recipe.category }}</p>
-    <ul>
+    <ul class="list-unstyled">
         {% if recipe.image_1 %}
-            <li><img src="{{ recipe.image_1.url }}" width="256"></li>
+            <li class="p-2 mx-2"><img src="{{ recipe.image_1.url }}" width="256"></li>
         {% endif %}
         {% if recipe.image_2 %}
-            <li><img src="{{ recipe.image_2.url }}" width="256"></li>
+            <li class="p-2 mx-2"><img src="{{ recipe.image_2.url }}" width="256"></li>
         {% endif %}
         {% if recipe.image_3 %}
-            <li><img src="{{ recipe.image_3.url }}" width="256"></li>
+            <li class="p-2 mx-2"><img src="{{ recipe.image_3.url }}" width="256"></li>
         {% endif %}
     </ul>
     <p>Створено: {{ recipe.created_at }}</p>
