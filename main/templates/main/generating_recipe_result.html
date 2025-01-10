@@ -12,7 +12,7 @@
     <form method="POST" action="{% url 'generate_recipe' %}" enctype="multipart/form-data">
         {% csrf_token %}
         {{ generation_input_form.as_p }}
-        <button type="submit">Перегенерувати</button>
+        <button type="submit" class="btn btn-primary">Перегенерувати</button>
     </form>
   
     <h2>Редагування рецепту</h2>
@@ -25,33 +25,33 @@
         <h3>Кроки</h3>
         <div id="steps">
             {% for step in recipe.steps %}
-                <p>
-                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
+                <div class="d-flex">
+                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" class="form-control" required>
+                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                </div>
             {% endfor %}
         </div>
-        <button type="button" id="add_step_button">Додати крок</button>
+        <button type="button" id="add_step_button" class="btn btn-primary">Додати крок</button>
         
         <h3>Інгредієнти</h3>
         <div id="ingredients">
             {% for ingredient in recipe.ingredients %}
-                <p>
-                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" required>
-                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" required>
-                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
+                <div class="d-flex">
+                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" class="form-control" required>
+                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" class="form-control" required>
+                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" class="form-control" required>
+                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                </div>
             {% endfor %}
         </div>
-        <button type="button" id="add_ingredient_button">Додати інгредієнт</button>
+        <button type="button" id="add_ingredient_button" class="btn btn-primary">Додати інгредієнт</button>
         
         <h3>Теги</h3>
         <div id="tags">
         </div>
-        <button type="button" id="add_tag_button">Додати тег</button>
+        <button type="button" id="add_tag_button" class="btn btn-primary">Додати тег</button>
         
-        <p><button type="submit">Додати рецепт</button></p>
+        <p><button type="submit" class="btn btn-primary">Додати рецепт</button></p>
     </form>
 {% endblock %}
 
