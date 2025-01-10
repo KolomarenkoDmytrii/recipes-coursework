@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}Створення рецепту{% endblock %}
 
@@ -11,7 +12,7 @@
     <h2>Генерування рецепту</h2>
     <form method="POST" action="{% url 'generate_recipe' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ generation_input_form.as_p }}
+        {{ generation_input_form|crispy }}
         <button type="submit" class="btn btn-primary">Перегенерувати</button>
     </form>
   
@@ -20,7 +21,7 @@
         {% csrf_token %}
         
         <h3>Інформація</h3>
-        {{ recipe_info_form.as_p }}
+        {{ recipe_info_form|crispy }}
         
         <h3>Кроки</h3>
         <div id="steps">
