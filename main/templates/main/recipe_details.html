@@ -41,9 +41,9 @@
     </ol>
 
     <h2>Теги</h2>
-    <ul>
+    <ul class="d-flex flex-wrap list-unstyled">
         {% for tag in tags %}
-            <li>{{ tag.tag_text }}</li>
+            <li class="bg-primary text-white p-2 mx-2">{{ tag.tag_text }}</li>
         {% endfor %}
     </ul>
 
