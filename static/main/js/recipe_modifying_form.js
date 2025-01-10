@@ -11,13 +11,13 @@ function addStepField() {
     removeButton.className = "btn btn-secondary";
 
     const stepsDiv = document.getElementById("steps");
-    const para = document.createElement("p");
-    para.appendChild(stepDescriptionInput);
-    para.appendChild(removeButton);
-    para.className = "d-inline";
-    stepsDiv.appendChild(para);
+    const div = document.createElement("div");
+    div.appendChild(stepDescriptionInput);
+    div.appendChild(removeButton);
+    div.className = "d-flex";
+    stepsDiv.appendChild(div);
 
-    removeButton.addEventListener("click", () => stepsDiv.removeChild(para));
+    removeButton.addEventListener("click", () => stepsDiv.removeChild(div));
 }
 
 function addIngredientField() {
@@ -48,14 +48,15 @@ function addIngredientField() {
     removeButton.className = "btn btn-secondary";
 
     const ingredientsDiv = document.getElementById("ingredients");
-    const para = document.createElement("p");
-    para.appendChild(nameInput);
-    para.appendChild(volumeInput);
-    para.appendChild(measureInput);
-    para.appendChild(removeButton);
-    ingredientsDiv.appendChild(para);
+    const div = document.createElement("div");
+    div.appendChild(nameInput);
+    div.appendChild(volumeInput);
+    div.appendChild(measureInput);
+    div.appendChild(removeButton);
+    div.className = "d-flex";
+    ingredientsDiv.appendChild(div);
 
-    removeButton.addEventListener("click", () => ingredientsDiv.removeChild(para));
+    removeButton.addEventListener("click", () => ingredientsDiv.removeChild(div));
 }
 
 function addTagField() {
@@ -71,12 +72,13 @@ function addTagField() {
     removeButton.className = "btn btn-secondary";
 
     const tagsDiv = document.getElementById("tags");
-    const para = document.createElement("p");
-    para.appendChild(input);
-    para.appendChild(removeButton);
-    tagsDiv.appendChild(para);
+    const div = document.createElement("div");
+    div.appendChild(input);
+    div.appendChild(removeButton);
+    div.className = "d-flex";
+    tagsDiv.appendChild(div);
 
-    removeButton.addEventListener("click", () => tagsDiv.removeChild(para));
+    removeButton.addEventListener("click", () => tagsDiv.removeChild(div));
 }
 
 document.getElementById("add_step_button").addEventListener("click", addStepField);

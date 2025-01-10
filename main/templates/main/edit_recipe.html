@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}Редагування рецепту{% endblock %}
 
@@ -13,66 +14,57 @@
         {% csrf_token %}
         
         <h2>Інформація</h2>
-        {{ recipe_form.as_p }}
+        {{ recipe_form|crispy }}
         <p>{{ info_error_message }}</p>
         
         <h2>Кроки</h2>
         <h3>Для оновлення</h3>
-        {{ step_formset.management_form }}
-        {% for form in step_formset %}
-            {{ form.as_p }}
-        {% endfor %}
+        {{ step_formset|crispy }}
         <h3>Для додання</h3>
         <div id="steps">
             {% for step in new_steps %}
-                <p>
-                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
+                <div class="d-flex">
+                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" class="form-control" required>
+                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                </div>
             {% endfor %}
         </div>
-        <button type="button" id="add_step_button">Додати крок</button>
+        <button type="button" id="add_step_button" class="btn btn-primary">Додати крок</button>
         <p>{{ step_error_message }}</p>
         
         <h2>Інгредієнти</h2>
         <h3>Для оновлення</h3>
-        {{ ingredient_formset.management_form }}
-        {% for form in ingredient_formset %}
-            {{ form.as_p }}
-        {% endfor %}
+        {{ ingredient_formset|crispy }}
         <h3>Для додання</h3>
         <div id="ingredients">
             {% for ingredient in new_ingredients %}
-                <p>
-                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" required>
-                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" required>
-                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
+                <div class="d-flex">
+                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" class="form-control" required>
+                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" class="form-control" required>
+                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" class="form-control" required>
+                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                </div>
             {% endfor %}
         </div>
-        <button type="button" id="add_ingredient_button">Додати інгредієнт</button>
+        <button type="button" id="add_ingredient_button" class="btn btn-primary">Додати інгредієнт</button>
         <p>{{ ingredient_error_message }}</p>
         
         <h2>Теги</h2>
         <h3>Для оновлення</h3>
-        {{ tag_formset.management_form }}
-        {% for form in tag_formset %}
-            {{ form.as_p }}
-        {% endfor %}
+        {{ tag_formset|crispy }}
         <h3>Для додання</h3>
         <div id="tags">
             {% for tag in new_tags %}
-                <p>
-                    <input type="text" name="new_tag_text" value="{{ tag }}" placeholder="Опис кроку" required>
-                    <button onclick="this.parentNode.remove()">Вилучити</button>
-                </p>
+                <div class="d-flex">
+                    <input type="text" name="new_tag_text" value="{{ tag }}" placeholder="Опис кроку" class="form-control" required>
+                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                </div>
             {% endfor %}
         </div>
-        <button type="button" id="add_tag_button">Додати тег</button>
+        <button type="button" id="add_tag_button" class="btn btn-primary">Додати тег</button>
         <p>{{ tag_error_message }}</p>
         
-        <p><button type="submit">Зберегти зміни</button></p>
+        <p><button type="submit" class="btn btn-primary">Зберегти зміни</button></p>
     </form>
 {% endblock %}
 

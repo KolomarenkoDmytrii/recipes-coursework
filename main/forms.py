@@ -63,6 +63,9 @@ RecipeTagFormSet = forms.inlineformset_factory(
     fields=["tag_text"],
     can_delete=True,
     extra=0,
+    labels={
+        "tag_text": "Тег"
+    }
 )
 
 
@@ -72,6 +75,11 @@ RecipeIngredientFormSet = forms.inlineformset_factory(
     fields=["name", "volume", "volume_measure"],
     can_delete=True,
     extra=0,
+    labels={
+        "name": "Назва інгредієнту",
+        "volume": "Обсяг",
+        "volume_measure": "Міра обсягу",
+    }
 )
 
 
