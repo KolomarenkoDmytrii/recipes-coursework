@@ -6,7 +6,7 @@
     <p>Ви справді хочете вилучити рецепт "{{ recipe_name }}"?</p>
     <form action="{% url 'delete_recipe' recipe_id=recipe_id %}" method="post">
         {% csrf_token %}
-        <button type="submit">Так, вилучити</button>
+        <button type="submit" class="btn btn-primary">Так, вилучити</button>
     </form>
 
     <p><a href="{% url 'home' %}">На головну сторінку</a></p>
