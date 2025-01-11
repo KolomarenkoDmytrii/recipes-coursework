@@ -3,10 +3,13 @@ from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.db import transaction
-from django.http import HttpResponseRedirect
+
+# from django.http import HttpResponseRedirect
+from django.http import FileResponse
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 from .ai import get_generated_recipe
+from .export_utils import export_recipe_to_text
 from . import forms
 
 
@@ -390,4 +393,22 @@ def generate_recipe(request):
         request,
         "main/generating_recipe_input.html",
         {"input_form": forms.RecipeGenerationForm()},
+    )
+
+
+@login_required
+def download_recipe(request, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+
+    if recipe.user != request.user:
+        return render(request, "access_denied.html")
+
+    ingredients = RecipeIngredient.objects.filter(recipe=recipe)
+    steps = RecipeStep.objects.filter(recipe=recipe).order_by("step_number")
+    tags = RecipeTag.objects.filter(recipe=recipe)
+
+    return FileResponse(
+        export_recipe_to_text(recipe, ingredients, steps, tags),
+        as_attachment=True,
+        filename=f"{recipe.name}.txt",
     )

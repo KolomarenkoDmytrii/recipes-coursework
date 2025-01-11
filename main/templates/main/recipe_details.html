@@ -48,5 +48,6 @@
     </ul>
 
     <p><a href="{% url 'edit_recipe' recipe_id=recipe.id %}">Редагувати цей рецепт</a></p>
+    <p><a href="{% url 'download_recipe' recipe_id=recipe.id %}">Завантажити цей рецепт</a></p>
     <p><a href="{% url 'delete_recipe' recipe_id=recipe.id %}">Вилучити цей рецепт</a></p>
 {% endblock %}

@@ -12,4 +12,5 @@ urlpatterns = [
     path("<int:recipe_id>/details", views.recipe_details, name="recipe_details"),
     path("<int:recipe_id>/delete", views.delete_recipe, name="delete_recipe"),
     path("<int:recipe_id>/edit", views.edit_recipe, name="edit_recipe"),
+    path("<int:recipe_id>/text-download", views.download_recipe, name="download_recipe"),
 ]
