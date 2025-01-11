@@ -71,9 +71,13 @@ class SearchResultsView(ListView):
                         recipe_search_params_combined | param
                     )
 
-                return Recipe.objects.filter(
-                    recipe_search_params_combined, user=self.request.user
-                ).distinct().order_by("name")
+                return (
+                    Recipe.objects.filter(
+                        recipe_search_params_combined, user=self.request.user
+                    )
+                    .distinct()
+                    .order_by("name")
+                )
 
             return Recipe.objects.none()
         else:
@@ -159,7 +163,9 @@ def create_recipe(request):
             for tag in tags:
                 RecipeTag.objects.create(recipe=recipe, tag_text=tag)
 
-        return render(request, "main/create_recipe_success.html", {"recipe_id": recipe.id})
+        return render(
+            request, "main/create_recipe_success.html", {"recipe_id": recipe.id}
+        )
     else:
         recipe_form = forms.RecipeForm()
         return render(request, "main/create_recipe.html", {"recipe_form": recipe_form})
@@ -323,7 +329,9 @@ def edit_recipe(request, recipe_id):
             for tag in new_tags:
                 RecipeTag.objects.create(recipe=recipe, tag_text=tag)
 
-        return render(request, "main/edit_recipe_success.html", {"recipe_id": recipe.id})
+        return render(
+            request, "main/edit_recipe_success.html", {"recipe_id": recipe.id}
+        )
     else:
         recipe_form = forms.RecipeForm(instance=recipe)
         step_formset = forms.RecipeStepFormSet(instance=recipe)

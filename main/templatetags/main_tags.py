@@ -26,14 +26,14 @@ def param_replace(context, **kwargs):
     and
     https://www.caktusgroup.com/blog/2018/10/18/filtering-and-pagination-django/
     """
-    d = context['request'].GET.copy()
+    d = context["request"].GET.copy()
 
     for k, v in kwargs.items():
         d[k] = v
 
     # removing empty parameters
-    # the list comprehension [k for k, v in d.items() if not v] generates a 
-    # list of keys where the associated value is empty or falsy 
+    # the list comprehension [k for k, v in d.items() if not v] generates a
+    # list of keys where the associated value is empty or falsy
     # (such as None, an empty string "", False, etc.).
     for k in [k for k, v in d.items() if not v]:
         del d[k]

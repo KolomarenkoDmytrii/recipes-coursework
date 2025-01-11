@@ -5,8 +5,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 
+
 def get_recipe_image_path(instance, filename):
     return f"recipes/{str(uuid.uuid4())}_{filename}"
+
 
 # Create your models here.
 class Recipe(models.Model):
