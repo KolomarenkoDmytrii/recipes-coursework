@@ -84,7 +84,7 @@ RecipeIngredientFormSet = forms.inlineformset_factory(
 class SearchForm(forms.Form):
     search_string = forms.CharField(required=True, label="Пошук")
     search_in_names = forms.BooleanField(
-        initial=True, required=False, label="Шукати за іменем"
+        initial=True, required=False, label="Шукати за назвою"
     )
     search_in_descriptions = forms.BooleanField(
         required=False, label="Шукати за описом"
