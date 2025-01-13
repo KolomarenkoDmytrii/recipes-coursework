@@ -30,6 +30,10 @@ class RecipeStep(models.Model):
     step_number = models.PositiveIntegerField()
     step_description = models.CharField(max_length=512)
 
+    class Meta:
+        unique_together = ["recipe", "step_number"]
+        ordering = ["step_number"]
+
 
 class RecipeTag(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)

@@ -182,7 +182,7 @@ def recipe_details(request, recipe_id):
         return render(request, "access_denied.html")
 
     ingredients = RecipeIngredient.objects.filter(recipe=recipe)
-    steps = RecipeStep.objects.filter(recipe=recipe).order_by("step_number")
+    steps = RecipeStep.objects.filter(recipe=recipe)
     tags = RecipeTag.objects.filter(recipe=recipe)
 
     return render(
@@ -404,7 +404,7 @@ def download_recipe(request, recipe_id):
         return render(request, "access_denied.html")
 
     ingredients = RecipeIngredient.objects.filter(recipe=recipe)
-    steps = RecipeStep.objects.filter(recipe=recipe).order_by("step_number")
+    steps = RecipeStep.objects.filter(recipe=recipe)
     tags = RecipeTag.objects.filter(recipe=recipe)
 
     return FileResponse(
