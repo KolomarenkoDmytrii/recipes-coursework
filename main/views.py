@@ -3,8 +3,6 @@ from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.db import transaction
-
-# from django.http import HttpResponseRedirect
 from django.http import FileResponse
 
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
