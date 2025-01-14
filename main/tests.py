@@ -166,5 +166,58 @@ class SearchViewTest(TestCase):
                 search_string=test_data["search_string"],
                 found=test_data["found"],
             ):
-                response = self.client.get(reverse("search_results"), data={"search_string": test_data["search_string"], test_data["search_param"]: "on"})
-                self.assertEqual(sorted(r.pk for r in response.context["object_list"]), sorted(r.pk for r in test_data["found"]))
+                response = self.client.get(
+                    reverse("search_results"),
+                    data={
+                        "search_string": test_data["search_string"],
+                        test_data["search_param"]: "on",
+                    },
+                )
+                self.assertEqual(
+                    sorted(r.pk for r in response.context["object_list"]),
+                    sorted(r.pk for r in test_data["found"]),
+                )
+
+
+class CreateRecipeViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="user", password="123456")
+
+    def setUp(self):
+        self.client.login(username="user", password="123456")
+
+    def test_recipe_creation(self):
+        response = self.client.post(
+            reverse("create_recipe"),
+            data={
+                "name": "Test",
+                "description": "test recipe",
+                "cooking_time": 10,
+                "category": "test",
+                "new_ingredient_name": ["apple", "pear"],
+                "new_ingredient_volume": [100, 1],
+                "new_ingredient_volume_measure": ["g", "pcs"],
+                "new_step_description": ["step 1", "step 2"],
+                "new_tag_text": ["tag 1", "tag 2"],
+            },
+        )
+
+        recipe = Recipe.objects.get(name="Test")
+        ingredients = RecipeIngredient.objects.filter(recipe=recipe)
+        steps = RecipeStep.objects.filter(recipe=recipe)
+        tags = RecipeTag.objects.filter(recipe=recipe)
+
+        self.assertEqual(recipe.name, "Test")
+        self.assertEqual(recipe.description, "test recipe")
+        self.assertEqual(recipe.cooking_time, 10)
+        self.assertEqual(recipe.category, "test")
+
+        self.assertCountEqual([i.name for i in ingredients], ["apple", "pear"])
+        self.assertCountEqual([i.volume for i in ingredients], [100, 1])
+        self.assertCountEqual([i.volume_measure for i in ingredients], ["g", "pcs"])
+
+        self.assertCountEqual([s.step_description for s in steps], ["step 1", "step 2"])
+
+        self.assertCountEqual([t.tag_text for t in tags], ["tag 1", "tag 2"])
+
