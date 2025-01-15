@@ -406,3 +406,55 @@ class DownloadRecipeViewTest(TestCase):
 """
 
         self.assertEqual(downloaded_recipe, expected_recipe)
+
+
+class RecipeDetailsViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="user", password="123456")
+
+        cls.recipe = Recipe.objects.create(
+            user=cls.user,
+            name="Test",
+            description="test recipe",
+            cooking_time=30,
+            category="test",
+            created_at=datetime.datetime(2025, 1, 13, 14, 30),
+            updated_at=datetime.datetime(2025, 1, 13, 15, 30),
+        )
+
+        cls.steps = [
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=0, step_description="step 1"
+            ),
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=1, step_description="step 2"
+            ),
+        ]
+
+        cls.ingredients = [
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="apple", volume=1.0, volume_measure="pcs"
+            ),
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="pear", volume=1.0, volume_measure="pcs"
+            ),
+        ]
+
+        cls.tags = [
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 1"),
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 2"),
+        ]
+
+    def setUp(self):
+        self.client.login(username="user", password="123456")
+
+    def test_recipe_details_content(self):
+        response = self.client.get(
+            reverse("recipe_details", kwargs={"recipe_id": self.recipe.pk})
+        )
+
+        self.assertEqual(response.context["recipe"], self.recipe)
+        self.assertEqual(list(response.context["ingredients"]), self.ingredients)
+        self.assertEqual(list(response.context["steps"]), self.steps)
+        self.assertEqual(list(response.context["tags"]), self.tags)
