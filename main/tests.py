@@ -221,3 +221,105 @@ class CreateRecipeViewTest(TestCase):
 
         self.assertCountEqual([t.tag_text for t in tags], ["tag 1", "tag 2"])
 
+
+class EditRecipeViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="user", password="123456")
+
+        cls.recipe = Recipe.objects.create(
+            user=cls.user,
+            name="test 1",
+            description="test",
+            cooking_time=30,
+            category="test a",
+            created_at=datetime.datetime(2025, 1, 13, 14, 30),
+            updated_at=datetime.datetime(2025, 1, 13, 15, 30),
+        )
+
+        cls.steps = [
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=0, step_description="s1"
+            ),
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=1, step_description="s2"
+            ),
+        ]
+
+        cls.ingredients = [
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="apple", volume=1.0, volume_measure="pcs"
+            ),
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="pear", volume=1.0, volume_measure="pcs"
+            ),
+        ]
+
+        cls.tags = [
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 1"),
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 2"),
+        ]
+
+        cls.post_data = {
+            "name": "Test",
+            "description": "test recipe",
+            "cooking_time": 10,
+            "category": "test",
+            "recipestep_set-TOTAL_FORMS": "2",
+            "recipestep_set-INITIAL_FORMS": "2",
+            "recipestep_set-0-id": cls.steps[0].pk,
+            "recipestep_set-0-step_description": "step 1",
+            "recipestep_set-0-DELETE": "",
+            "recipestep_set-1-id": cls.steps[1].pk,
+            "recipestep_set-1-step_description": cls.steps[1].step_description,
+            "recipestep_set-1-DELETE": "on",
+            "new_step_description": ["step 3"],
+            "recipeingredient_set-TOTAL_FORMS": "2",
+            "recipeingredient_set-INITIAL_FORMS": "2",
+            "recipeingredient_set-0-id": cls.ingredients[0].pk,
+            "recipeingredient_set-0-name": "McIntosh apple",
+            "recipeingredient_set-0-volume": "200",
+            "recipeingredient_set-0-volume_measure": "g",
+            "recipeingredient_set-0-DELETE": "",
+            "recipeingredient_set-1-id": cls.ingredients[1].pk,
+            "recipeingredient_set-1-name": cls.ingredients[1].name,
+            "recipeingredient_set-1-volume": cls.ingredients[1].volume,
+            "recipeingredient_set-1-volume_measure": cls.ingredients[1].volume_measure,
+            "recipeingredient_set-1-DELETE": "on",
+            "new_ingredient_name": ["strawberry"],
+            "new_ingredient_volume": [1],
+            "new_ingredient_volume_measure": ["pcs"],
+            "recipetag_set-TOTAL_FORMS": "2",
+            "recipetag_set-INITIAL_FORMS": "2",
+            "recipetag_set-0-id": cls.tags[0].pk,
+            "recipetag_set-0-tag_text": "tag 1 updated",
+            "recipetag_set-0-DELETE": "",
+            "recipetag_set-1-id": cls.tags[1].pk,
+            "recipetag_set-1-tag_text": cls.tags[1].tag_text,
+            "recipetag_set-1-DELETE": "on",
+            "new_tag_text": ["tag 3"],
+        }
+
+    def setUp(self):
+        self.client.login(username="user", password="123456")
+    
+    def test_recipe_editing(self):
+        self.client.post(reverse("edit_recipe", kwargs={"recipe_id": self.recipe.pk}), data=self.post_data)
+
+        recipe = Recipe.objects.get(pk=self.recipe.pk)
+        ingredients = RecipeIngredient.objects.filter(recipe=recipe)
+        steps = RecipeStep.objects.filter(recipe=recipe)
+        tags = RecipeTag.objects.filter(recipe=recipe)
+
+        self.assertEqual(recipe.name, "Test")
+        self.assertEqual(recipe.description, "test recipe")
+        self.assertEqual(recipe.cooking_time, 10)
+        self.assertEqual(recipe.category, "test")
+
+        self.assertCountEqual([i.name for i in ingredients], ["McIntosh apple", "strawberry"])
+        self.assertCountEqual([i.volume for i in ingredients], [200, 1])
+        self.assertCountEqual([i.volume_measure for i in ingredients], ["g", "pcs"])
+
+        self.assertCountEqual([s.step_description for s in steps], ["step 1", "step 3"])
+
+        self.assertCountEqual([t.tag_text for t in tags], ["tag 1 updated", "tag 3"])

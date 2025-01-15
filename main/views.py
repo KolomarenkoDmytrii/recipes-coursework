@@ -316,7 +316,7 @@ def edit_recipe(request, recipe_id):
             # new data
             start = RecipeStep.objects.aggregate(Max("step_number", default=0))[
                 "step_number__max"
-            ]
+            ] + 1
             for step_number, step in enumerate(new_steps, start):
                 RecipeStep.objects.create(
                     recipe=recipe, step_number=step_number, step_description=step
