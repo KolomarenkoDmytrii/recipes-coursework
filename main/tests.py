@@ -1,4 +1,5 @@
 import datetime
+from io import StringIO
 
 from django.test import TestCase
 from django.shortcuts import reverse
@@ -302,9 +303,12 @@ class EditRecipeViewTest(TestCase):
 
     def setUp(self):
         self.client.login(username="user", password="123456")
-    
+
     def test_recipe_editing(self):
-        self.client.post(reverse("edit_recipe", kwargs={"recipe_id": self.recipe.pk}), data=self.post_data)
+        self.client.post(
+            reverse("edit_recipe", kwargs={"recipe_id": self.recipe.pk}),
+            data=self.post_data,
+        )
 
         recipe = Recipe.objects.get(pk=self.recipe.pk)
         ingredients = RecipeIngredient.objects.filter(recipe=recipe)
@@ -316,10 +320,89 @@ class EditRecipeViewTest(TestCase):
         self.assertEqual(recipe.cooking_time, 10)
         self.assertEqual(recipe.category, "test")
 
-        self.assertCountEqual([i.name for i in ingredients], ["McIntosh apple", "strawberry"])
+        self.assertCountEqual(
+            [i.name for i in ingredients], ["McIntosh apple", "strawberry"]
+        )
         self.assertCountEqual([i.volume for i in ingredients], [200, 1])
         self.assertCountEqual([i.volume_measure for i in ingredients], ["g", "pcs"])
 
         self.assertCountEqual([s.step_description for s in steps], ["step 1", "step 3"])
 
         self.assertCountEqual([t.tag_text for t in tags], ["tag 1 updated", "tag 3"])
+
+
+class DownloadRecipeViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="user", password="123456")
+
+        cls.recipe = Recipe.objects.create(
+            user=cls.user,
+            name="Test",
+            description="test recipe",
+            cooking_time=30,
+            category="test",
+            created_at=datetime.datetime(2025, 1, 13, 14, 30),
+            updated_at=datetime.datetime(2025, 1, 13, 15, 30),
+        )
+
+        cls.steps = [
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=0, step_description="step 1"
+            ),
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=1, step_description="step 2"
+            ),
+        ]
+
+        cls.ingredients = [
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="apple", volume=1.0, volume_measure="pcs"
+            ),
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="pear", volume=1.0, volume_measure="pcs"
+            ),
+        ]
+
+        cls.tags = [
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 1"),
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 2"),
+        ]
+
+    def setUp(self):
+        self.client.login(username="user", password="123456")
+
+    def test_downloaded_recipe_content(self):
+        response = self.client.get(
+            reverse("download_recipe", kwargs={"recipe_id": self.recipe.pk})
+        )
+
+        self.assertEqual(response.filename, f"{self.recipe.name}.txt")
+
+        downloaded_recipe = b"".join(response.streaming_content).decode("utf-8")
+        expected_recipe = f"""{self.recipe.name}
+=====
+
+Інформація
+-----
+Опис: {self.recipe.description}
+Час приготування, хв: {self.recipe.cooking_time}
+Категорія: {self.recipe.category}
+
+Інгредієнти
+-----
+- {self.ingredients[0].name}: {self.ingredients[0].volume} {self.ingredients[0].volume_measure}
+- {self.ingredients[1].name}: {self.ingredients[1].volume} {self.ingredients[1].volume_measure}
+
+Кроки
+-----
+1) {self.steps[0].step_description}
+2) {self.steps[1].step_description}
+
+Теги
+-----
+- {self.tags[0].tag_text}
+- {self.tags[1].tag_text}
+"""
+
+        self.assertEqual(downloaded_recipe, expected_recipe)
