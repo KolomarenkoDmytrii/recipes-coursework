@@ -5,3 +5,4 @@ Pillow>=11
 python-dotenv
 django-crispy-forms>=2
 crispy-bootstrap5>=2024
+coverage>=7.6.*
