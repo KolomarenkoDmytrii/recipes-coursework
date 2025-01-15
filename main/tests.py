@@ -458,3 +458,70 @@ class RecipeDetailsViewTest(TestCase):
         self.assertEqual(list(response.context["ingredients"]), self.ingredients)
         self.assertEqual(list(response.context["steps"]), self.steps)
         self.assertEqual(list(response.context["tags"]), self.tags)
+
+
+class RecipeDeletionTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="user", password="123456")
+
+        cls.recipe = Recipe.objects.create(
+            user=cls.user,
+            name="Test",
+            description="test recipe",
+            cooking_time=30,
+            category="test",
+            created_at=datetime.datetime(2025, 1, 13, 14, 30),
+            updated_at=datetime.datetime(2025, 1, 13, 15, 30),
+        )
+
+        cls.steps = [
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=0, step_description="step 1"
+            ),
+            RecipeStep.objects.create(
+                recipe=cls.recipe, step_number=1, step_description="step 2"
+            ),
+        ]
+
+        cls.ingredients = [
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="apple", volume=1.0, volume_measure="pcs"
+            ),
+            RecipeIngredient.objects.create(
+                recipe=cls.recipe, name="pear", volume=1.0, volume_measure="pcs"
+            ),
+        ]
+
+        cls.tags = [
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 1"),
+            RecipeTag.objects.create(recipe=cls.recipe, tag_text="tag 2"),
+        ]
+
+    def setUp(self):
+        self.client.login(username="user", password="123456")
+
+    def test_recipe_details_content(self):
+        recipe_pk = self.recipe.pk
+        steps_pks = [s.pk for s in self.steps]
+        ingredients_pks = [i.pk for i in self.ingredients]
+        tags_pks = [t.pk for t in self.tags]
+
+        response = self.client.post(
+            reverse("delete_recipe", kwargs={"recipe_id": self.recipe.pk})
+        )
+
+        with self.assertRaises(Recipe.DoesNotExist):
+            Recipe.objects.get(pk=recipe_pk)
+
+        with self.assertRaises(RecipeStep.DoesNotExist):
+            for pk in steps_pks:
+                RecipeStep.objects.get(pk=pk)
+
+        with self.assertRaises(RecipeIngredient.DoesNotExist):
+            for pk in ingredients_pks:
+                RecipeIngredient.objects.get(pk=pk)
+
+        with self.assertRaises(RecipeTag.DoesNotExist):
+            for pk in tags_pks:
+                RecipeTag.objects.get(pk=pk)
