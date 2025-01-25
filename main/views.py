@@ -1,29 +1,33 @@
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView
-from django.views import View
-from django.contrib.auth.decorators import login_required
-from django.db.models import Max, Q
-from django.db import transaction
-from django.http import FileResponse, HttpResponseForbidden
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.db.models import Max, Q
+from django.http import FileResponse, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, render
+from django.views import View
+from django.views.generic import ListView
 
-from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
+from . import forms
 from .ai import get_generated_recipe
 from .export_utils import export_recipe_to_text
-from . import forms
+from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 
 
 class RecipeImageDownload(View):
     def get(self, request, relative_path):
         print(f"relative_path: {relative_path}")
-        recipes = Recipe.objects.filter(Q(image_1=relative_path) | Q(image_2=relative_path) | Q(image_3=relative_path))
+        recipes = Recipe.objects.filter(
+            Q(image_1=relative_path)
+            | Q(image_2=relative_path)
+            | Q(image_3=relative_path)
+        )
         recipe = get_object_or_404(recipes)
 
         if recipe.user != request.user:
             return HttpResponseForbidden()
 
         absolute_path = f"{settings.MEDIA_ROOT}/{relative_path}"
-        return FileResponse(open(absolute_path, 'rb'), as_attachment=True)
+        return FileResponse(open(absolute_path, "rb"), as_attachment=True)
 
 
 class RecipeListView(ListView):
@@ -329,9 +333,12 @@ def edit_recipe(request, recipe_id):
             change_recipe_data_using_formset(ingredient_formset, recipe)
 
             # new data
-            start = RecipeStep.objects.aggregate(Max("step_number", default=0))[
-                "step_number__max"
-            ] + 1
+            start = (
+                RecipeStep.objects.aggregate(Max("step_number", default=0))[
+                    "step_number__max"
+                ]
+                + 1
+            )
             for step_number, step in enumerate(new_steps, start):
                 RecipeStep.objects.create(
                     recipe=recipe, step_number=step_number, step_description=step

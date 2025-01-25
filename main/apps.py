@@ -1,7 +1,6 @@
+import google.generativeai as genai
 from django.apps import AppConfig
 from django.conf import settings
-
-import google.generativeai as genai
 
 
 class MainConfig(AppConfig):

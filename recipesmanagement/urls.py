@@ -30,5 +30,9 @@ urlpatterns = [
     # https://docs.djangoproject.com/en/5.1/topics/auth/default/#module-django.contrib.auth.views
     path("accounts/", include("django.contrib.auth.urls")),
     path("admin/", admin.site.urls),
-    path("media/<path:relative_path>", RecipeImageDownload.as_view(), name="recipe-image-download"),
+    path(
+        "media/<path:relative_path>",
+        RecipeImageDownload.as_view(),
+        name="recipe-image-download",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

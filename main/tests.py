@@ -1,9 +1,10 @@
 import datetime
 from io import StringIO
 
-from django.test import TestCase
-from django.shortcuts import reverse
 from django.contrib.auth.models import User
+from django.shortcuts import reverse
+from django.test import TestCase
+
 from .models import Recipe, RecipeIngredient, RecipeStep, RecipeTag
 
 
