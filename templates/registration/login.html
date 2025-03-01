@@ -5,10 +5,11 @@
 {% block title %}Вхід до облікового запису{% endblock %}
 
 {% block content %}
-    <section id="hero" class="hero section">
-        <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
+<div class="hero section">
+    <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-        <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <section class="recipe section" data-aos="fade-up" data-aos-delay="100">
+        <div class="content-block container">
             <h1>Увійти</h1>
             <form method="post">
                 {% csrf_token %}
@@ -17,4 +18,5 @@
             </form>
         </div>
     </section>
+</div>
 {% endblock %}

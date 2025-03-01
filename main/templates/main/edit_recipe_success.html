@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Редагування рецепту{% endblock %}
 
 {% block content %}
-<p>Рецепт успішно відредаговано</p>
+<div class="hero section">
+    <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-<p>Перейти до...</p>
-<ul>
-    <li><a href="{% url 'home' %}">головної сторінки</a></li>
-    <li><a href="{% url 'list_recipes' %}">списку рецептів</a></li>
-    <li><a href="{% url 'recipe_details' recipe_id=recipe_id %}">до відредагованого рецепту</a></li>
-</ul>
+    <section class="recipe section" data-aos="fade-up" data-aos-delay="100">
+        <div class="content-block container">
+            <p>Рецепт успішно відредаговано</p>
+
+            <p>Перейти до...</p>
+            <ul>
+                <li><a href="{% url 'home' %}">головної сторінки</a></li>
+                <li><a href="{% url 'list_recipes' %}">списку рецептів</a></li>
+                <li><a href="{% url 'recipe_details' recipe_id=recipe_id %}">до відредагованого рецепту</a></li>
+            </ul>
+        </div>
+    </section>
+</div>
 {% endblock %}

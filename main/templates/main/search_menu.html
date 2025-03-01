@@ -1,15 +1,24 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}Пошук{% endblock %}
 
 {% block content %}
-    <h1>Меню пошуку</h1>
+<div class="hero section">
+    <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+    <section class="recipe section" data-aos="fade-up" data-aos-delay="100">
+        <div class="container">
+            <h1>Меню пошуку</h1>
 
-    <form method="get" action="{% url 'search_results' %}">
-        {{ search_form|crispy}}
-        <button type="submit" class="btn btn-primary">Шукати</button>
-    </form>
+            <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+
+            <form method="get" action="{% url 'search_results' %}">
+                {{ search_form|crispy}}
+                <button type="submit" class="btn btn-primary">Шукати</button>
+            </form>
+        </div>
+    </section>
+</div>
 {% endblock %}

@@ -5,67 +5,70 @@
 {% block title %}Створення рецепту{% endblock %}
 
 {% block content %}
-<section class="modifying-form section">
-    <div class="container">
-        <h1>Створення нового рецепту</h1>
+<div class="hero section">
+    <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-        <p><a href="{% url 'home' %}">Перейти до головної сторінки</a></p>
+    <section class="recipe section" data-aos="fade-up" data-aos-delay="100">
+        <div class="container">
+            <h1>Створення нового рецепту</h1>
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+            <p><a href="{% url 'home' %}">Перейти до головної сторінки</a></p>
 
-            <h2>Інформація</h2>
-            {{ recipe_form|crispy }}
-            <p>{{ info_error_message }}</p>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <h2>Кроки</h2>
-            <div id="steps">
-                {% for step in new_steps %}
-                <div class="d-flex">
-                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку"
-                        class="form-control" required>
-                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                <h2>Інформація</h2>
+                {{ recipe_form|crispy }}
+                <p>{{ info_error_message }}</p>
+
+                <h2>Кроки</h2>
+                <div id="steps">
+                    {% for step in new_steps %}
+                    <div class="d-flex">
+                        <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку"
+                            class="form-control" required>
+                        <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            <button type="button" id="add_step_button" class="btn btn-primary">Додати крок</button>
-            <p>{{ step_error_message }}</p>
+                <button type="button" id="add_step_button" class="btn btn-primary">Додати крок</button>
+                <p>{{ step_error_message }}</p>
 
-            <h2>Інгредієнти</h2>
-            <div id="ingredients">
-                {% for ingredient in new_ingredients %}
-                <div class="d-flex">
-                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}"
-                        placeholder="Назва інгредієнту" class="form-control" required>
-                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}"
-                        placeholder="Обсяг" class="form-control" required>
-                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}"
-                        placeholder="Міра обсягу" class="form-control" required>
-                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                <h2>Інгредієнти</h2>
+                <div id="ingredients">
+                    {% for ingredient in new_ingredients %}
+                    <div class="d-flex">
+                        <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}"
+                            placeholder="Назва інгредієнту" class="form-control" required>
+                        <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}"
+                            placeholder="Обсяг" class="form-control" required>
+                        <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}"
+                            placeholder="Міра обсягу" class="form-control" required>
+                        <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            <button type="button" id="add_ingredient_button" class="btn btn-primary">Додати інгредієнт</button>
-            <p>{{ ingredient_error_message }}</p>
+                <button type="button" id="add_ingredient_button" class="btn btn-primary">Додати інгредієнт</button>
+                <p>{{ ingredient_error_message }}</p>
 
-            <h2>Теги</h2>
-            <div id="tags">
-                {% for tag in new_tags %}
-                <div class="d-flex">
-                    <input type="text" name="new_tag_text" value="{{ tag }}" placeholder="Опис кроку"
-                        class="form-control" required>
-                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                <h2>Теги</h2>
+                <div id="tags">
+                    {% for tag in new_tags %}
+                    <div class="d-flex">
+                        <input type="text" name="new_tag_text" value="{{ tag }}" placeholder="Опис кроку"
+                            class="form-control" required>
+                        <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            <button type="button" id="add_tag_button" class="btn btn-primary">Додати тег</button>
-            <p>{{ tag_error_message }}</p>
+                <button type="button" id="add_tag_button" class="btn btn-primary">Додати тег</button>
+                <p>{{ tag_error_message }}</p>
 
-            <p><button type="submit" class="btn btn-primary">Додати рецепт</button></p>
-        </form>
-    </div>
-</section>
+                <p><button type="submit" class="btn btn-primary">Додати рецепт</button></p>
+            </form>
+        </div>
+    </section>
+</div>
 {% endblock %}
 
-{% block script %}
-<script src="{% static 'main/js/recipe_modifying_form.js' %}"></script>{% endblock %}
+{% block script %}<script src="{% static 'main/js/recipe_modifying_form.js' %}"></script>{% endblock %}

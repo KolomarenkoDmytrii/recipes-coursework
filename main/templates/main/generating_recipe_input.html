@@ -1,15 +1,24 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}Генерування рецепту{% endblock %}
 
 {% block content %}
-    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+<div class="hero section">
+    <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-    <h1>Генерування рецепту</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ input_form|crispy }}
-        <button type="submit" class="btn btn-primary">Згенерувати</button>
-    </form>
+    <section class="recipe section" data-aos="fade-up" data-aos-delay="100">
+        <div class="container">
+            <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+
+            <h1>Генерування рецепту</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ input_form|crispy }}
+                <button type="submit" class="btn btn-primary">Згенерувати</button>
+            </form>
+        </div>
+    </section>
+</div>
 {% endblock %}

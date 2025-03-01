@@ -5,55 +5,67 @@
 {% block title %}Створення рецепту{% endblock %}
 
 {% block content %}
-    <h1>Збереження згенерованого рецепту</h1>
+<div class="hero section">
+    <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-    <p><a href="{% url 'home' %}">Перейти до головної сторінки</a></p>
+    <section class="recipe section" data-aos="fade-up" data-aos-delay="100">
+        <div class="container">
+            <h1>Збереження згенерованого рецепту</h1>
 
-    <h2>Генерування рецепту</h2>
-    <form method="POST" action="{% url 'generate_recipe' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ generation_input_form|crispy }}
-        <button type="submit" class="btn btn-primary">Перегенерувати</button>
-    </form>
-  
-    <h2>Редагування рецепту</h2>
-    <form method="POST" action="{% url 'create_recipe' %}" enctype="multipart/form-data">
-        {% csrf_token %}
+            <p><a href="{% url 'home' %}">Перейти до головної сторінки</a></p>
+
+            <div data-aos="fade-up" data-aos-delay="200">
+                <h2>Генерування рецепту</h2>
+                <form method="POST" action="{% url 'generate_recipe' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ generation_input_form|crispy }}
+                    <button type="submit" class="btn btn-primary">Перегенерувати</button>
+                </form>
+            </div>
         
-        <h3>Інформація</h3>
-        {{ recipe_info_form|crispy }}
-        
-        <h3>Кроки</h3>
-        <div id="steps">
-            {% for step in recipe.steps %}
-                <div class="d-flex">
-                    <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" class="form-control" required>
-                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
-                </div>
-            {% endfor %}
+            <div data-aos="fade-up" data-aos-delay="200">
+                <h2>Редагування рецепту</h2>
+                <form method="POST" action="{% url 'create_recipe' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <h3>Інформація</h3>
+                    {{ recipe_info_form|crispy }}
+                    
+                    <h3>Кроки</h3>
+                    <div id="steps">
+                        {% for step in recipe.steps %}
+                            <div class="d-flex">
+                                <input type="text" name="new_step_description" value="{{ step }}" placeholder="Опис кроку" class="form-control" required>
+                                <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" id="add_step_button" class="btn btn-primary">Додати крок</button>
+                    
+                    <h3>Інгредієнти</h3>
+                    <div id="ingredients">
+                        {% for ingredient in recipe.ingredients %}
+                            <div class="d-flex">
+                                <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" class="form-control" required>
+                                <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" class="form-control" required>
+                                <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" class="form-control" required>
+                                <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" id="add_ingredient_button" class="btn btn-primary">Додати інгредієнт</button>
+                    
+                    <h3>Теги</h3>
+                    <div id="tags">
+                    </div>
+                    <button type="button" id="add_tag_button" class="btn btn-primary">Додати тег</button>
+                    
+                    <p><button type="submit" class="btn btn-primary">Додати рецепт</button></p>
+                </form>
+            </div>
         </div>
-        <button type="button" id="add_step_button" class="btn btn-primary">Додати крок</button>
-        
-        <h3>Інгредієнти</h3>
-        <div id="ingredients">
-            {% for ingredient in recipe.ingredients %}
-                <div class="d-flex">
-                    <input type="text" name="new_ingredient_name" value="{{ ingredient.name }}" placeholder="Назва інгредієнту" class="form-control" required>
-                    <input type="number" name="new_ingredient_volume" step="0.001" value="{{ ingredient.volume }}" placeholder="Обсяг" class="form-control" required>
-                    <input type="text" name="new_ingredient_volume_measure" value="{{ ingredient.volume_measure }}" placeholder="Міра обсягу" class="form-control" required>
-                    <button onclick="this.parentNode.remove()" class="btn btn-secondary">Вилучити</button>
-                </div>
-            {% endfor %}
-        </div>
-        <button type="button" id="add_ingredient_button" class="btn btn-primary">Додати інгредієнт</button>
-        
-        <h3>Теги</h3>
-        <div id="tags">
-        </div>
-        <button type="button" id="add_tag_button" class="btn btn-primary">Додати тег</button>
-        
-        <p><button type="submit" class="btn btn-primary">Додати рецепт</button></p>
-    </form>
+    </section>
+</div>
 {% endblock %}
 
 {% block script %}<script src="{% static 'main/js/recipe_modifying_form.js' %}"></script>{% endblock %}

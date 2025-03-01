@@ -3,8 +3,12 @@
 {% block title %}Вилучення рецепту{% endblock %}
 
 {% block content %}
-    <p>Рецепт "{{ recipe_name }}" успішно вилучено.</p>
+    <section class="recipe section">
+        <div class="container">
+            <p>Рецепт "{{ recipe_name }}" успішно вилучено.</p>
 
-    <p><a href="{% url 'home' %}">На головну сторінку</a></p>
-    <p><a href="{% url 'list_recipes' %}">До списку рецептів</a></p>
+            <p><a href="{% url 'home' %}">На головну сторінку</a></p>
+            <p><a href="{% url 'list_recipes' %}">До списку рецептів</a></p>
+        </div>
+    </section>
 {% endblock %}

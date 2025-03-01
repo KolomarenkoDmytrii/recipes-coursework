@@ -60,8 +60,8 @@
 /*--------------------------------------------------------------
 # General Styling & Shared Classes
 --------------------------------------------------------------*/
-.content-top-padding {
-  position: relative;
+ul > .bg-primary {
+  background-color: var(--accent-color);
 }
 
 body {
@@ -89,6 +89,25 @@ h5,
 h6 {
   color: var(--heading-color);
   font-family: var(--heading-font);
+}
+
+/* Pagination */
+.pagination > li > a,
+.pagination > li > a:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus,
+.pagination > li > span:hover {
+    z-index: 3;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* Tags */
+.tag {
+  color: #ffffff;
+  background-color: var(--accent-color);
+  padding: 5px;
+  margin: 5px;
 }
 
 /* PHP Email Form Messages
@@ -2606,29 +2625,43 @@ section,
 }
 
 /*--------------------------------------------------------------
-# Comment Form Section
+# Message
 --------------------------------------------------------------*/
-.modifying-form {
-  padding-top: 120px;
-}
-
-.modifying-form form {
+.content-block {
   background-color: var(--surface-color);
   margin-top: 30px;
   padding: 30px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-.modifying-form form h4 {
+/*--------------------------------------------------------------
+# Recipe Section
+--------------------------------------------------------------*/
+.recipe {
+  padding-top: 120px;
+}
+
+.recipe img {
+  position: relative;
+}
+
+.recipe form {
+  background-color: var(--surface-color);
+  margin-top: 30px;
+  padding: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.recipe form h4 {
   font-weight: bold;
   font-size: 22px;
 }
 
-.modifying-form form p {
+.recipe form p {
   font-size: 14px;
 }
 
-.modifying-form form input {
+.recipe form input:not([type="checkbox"]) {
   background-color: var(--surface-color);
   color: var(--default-color);
   border: 1px solid color-mix(in srgb, var(--default-color), transparent 70%);
@@ -2637,18 +2670,18 @@ section,
   padding: 10px 10px;
 }
 
-.modifying-form form input:focus {
+.recipe form input:not([type="checkbox"]):focus {
   color: var(--default-color);
   background-color: var(--surface-color);
   box-shadow: none;
   border-color: var(--accent-color);
 }
 
-.modifying-form form input::placeholder {
+.recipe form input::placeholder {
   color: color-mix(in srgb, var(--default-color), transparent 50%);
 }
 
-.modifying-form form textarea {
+.recipe form textarea {
   background-color: var(--surface-color);
   color: var(--default-color);
   border: 1px solid color-mix(in srgb, var(--default-color), transparent 70%);
@@ -2658,22 +2691,22 @@ section,
   height: 120px;
 }
 
-.modifying-form form textarea:focus {
+.recipe form textarea:focus {
   color: var(--default-color);
   box-shadow: none;
   border-color: var(--accent-color);
   background-color: var(--surface-color);
 }
 
-.modifying-form form textarea::placeholder {
+.recipe form textarea::placeholder {
   color: color-mix(in srgb, var(--default-color), transparent 50%);
 }
 
-.modifying-form form .form-group {
+.recipe form .form-group {
   margin-bottom: 25px;
 }
 
-.modifying-form form .btn-primary {
+.recipe form .btn-primary {
   border-radius: 4px;
   padding: 10px 20px;
   border: 0;
@@ -2681,17 +2714,27 @@ section,
   color: var(--contrast-color);
 }
 
-.modifying-form form .btn-primary:hover {
+.recipe form .btn-primary:hover {
   color: var(--contrast-color);
   background-color: color-mix(in srgb, var(--accent-color), transparent 20%);
 }
 
+.recipe form input[type="checkbox"]:focus {
+  outline: 2px solid var(--accent-color);
+}
+
+.recipe form input[type="checkbox"]:checked {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+
 /*--------------------------------------------------------------
 # Starter Section Section
 --------------------------------------------------------------*/
-.starter-section {
-  /* Add your styles here */
-}
+/* .starter-section {
+  # Add your styles here
+} */
 
 /*--------------------------------------------------------------
 # Widgets

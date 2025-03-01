@@ -17,6 +17,8 @@
                             {% csrf_token %}
                             <button type="submit" class="btn">Вийти з облікового запису</button>
                         </form>
+
+                        <p><a href="{% url 'password_change' %}">Змінити пароль</a></p>
                     </div>
 
                     <h2 class="title">Керування рецептами</h2>
@@ -65,7 +67,7 @@
                     </div>
                 </section>
             {% else %}
-                <div data-aos="fade-up" data-aos-delay="100">
+                <div class="content-block container" data-aos="fade-up" data-aos-delay="100">
                     <p>Ви не ввійшли у свій обліковий запис</p>
                     <p><a href="{% url 'login' %}">Увійти</a></p>
                     <p><a href="{% url 'signup' %}">Створити обліковий запис</a></p>
