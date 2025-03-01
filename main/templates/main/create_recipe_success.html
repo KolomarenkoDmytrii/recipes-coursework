@@ -1,18 +1,23 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Створення рецепту{% endblock %}
 
 {% block content %}
-<section class="recipe section">
-    <div class="container">
-        <p>Рецепт успішно створено</p>
+<div class="hero section">
+    <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-        <p>Перейти до...</p>
-        <ul>
-            <li><a href="{% url 'home' %}">головної сторінки</a></li>
-            <li><a href="{% url 'create_recipe' %}">створення рецепту</a></li>
-            <li><a href="{% url 'recipe_details' recipe_id=recipe_id %}">до створеного рецепту</a></li>
-        </ul>
-    </div>
-</section>
+    <section class="recipe section" data-aos="fade-up" data-aos-delay="100">
+        <div class="content-block container">
+            <p>Рецепт успішно створено</p>
+
+            <p>Перейти до...</p>
+            <ul>
+                <li><a href="{% url 'home' %}">головної сторінки</a></li>
+                <li><a href="{% url 'create_recipe' %}">створення рецепту</a></li>
+                <li><a href="{% url 'recipe_details' recipe_id=recipe_id %}">до створеного рецепту</a></li>
+            </ul>
+        </div>
+    </section>
+</div>
 {% endblock %}
