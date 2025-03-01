@@ -1,29 +1,76 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Головна{% endblock %}
 
 {% block content %}
-    <h1>Головна сторінка</h1>
+    <section id="hero" class="hero section">
+        <img src="{% static 'common/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
 
-    {% if user.is_authenticated %}
-        <p>Вітаємо, {{ user.username }}!</p>
+        <div class="container">
+            <h1>Головна сторінка</h1>
+            {% if user.is_authenticated %}
+                <section id="services" class="services section">
+                    <div class="container section-title" data-aos="fade-up">
+                        <h2>Вітаємо, {{ user.username }}!</h2>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn">Вийти з облікового запису</button>
+                        </form>
+                    </div>
 
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-link">Вийти з облікового запису</button>
-        </form>
+                    <h2 class="title">Керування рецептами</h2>
+                    <div class="container">
+                        <div class="row gy-4">
+                            <div class="col-lg-6 " data-aos="fade-up" data-aos-delay="100">
+                                <div class="service-item d-flex">
+                                    <div class="icon flex-shrink-0"><i class="bi bi-database-add"></i></div>
+                                    <div>
+                                        <h3 class="title"><a href="{% url 'create_recipe' %}" class="stretched-link">Створити рецепт</a></h3>
+                                        <p class="description">Додання нового рецепту до каталогу</p>
+                                    </div>
+                                </div>
+                            </div>
 
-        <p><a href="{% url 'password_change' %}">Змінити пароль</a></p>
+                            <div class="col-lg-6 " data-aos="fade-up" data-aos-delay="100">
+                                <div class="service-item d-flex">
+                                    <div class="icon flex-shrink-0"><i class="bi bi-view-list"></i></div>
+                                    <div>
+                                        <h3 class="title"><a href="{% url 'list_recipes' %}" class="stretched-link">Переглянути рецепти</a></h3>
+                                        <p class="description">Переглянути список наявних у каталозі рецептів</p>
+                                    </div>
+                                </div>
+                            </div>
 
-        <h2>Керування рецептами</h2>
-        <p><a href="{% url 'create_recipe' %}">Створити рецепт</a></p>
-        <p><a href="{% url 'list_recipes' %}">Переглянути рецепти</a></p>
-        <p><a href="{% url 'search_menu' %}">Пошук рецептів</a></p>
-        <p><a href="{% url 'generate_recipe' %}">Згенерувати рецепт</a></p>
+                            <div class="col-lg-6 " data-aos="fade-up" data-aos-delay="100">
+                                <div class="service-item d-flex">
+                                    <div class="icon flex-shrink-0"><i class="bi bi-search"></i></div>
+                                    <div>
+                                        <h3 class="title"><a href="{% url 'search_menu' %}" class="stretched-link">Пошук рецептів</a></h3>
+                                        <p class="description">Перейти до меню пошуку рецептів</p>
+                                    </div>
+                                </div>
+                            </div>
 
-    {% else %}
-        <p>Ви не ввійшли у свій обліковий запис</p>
-        <p><a href="{% url 'login' %}">Увійти</a></p>
-        <p><a href="{% url 'signup' %}">Створити обліковий запис</a></p>
-    {% endif %}
+                            <div class="col-lg-6 " data-aos="fade-up" data-aos-delay="100">
+                                <div class="service-item d-flex">
+                                    <div class="icon flex-shrink-0"><i class="bi bi-robot"></i></div>
+                                    <div>
+                                        <h3 class="title"><a href="{% url 'generate_recipe' %}" class="stretched-link">Згенерувати рецепт</a></h3>
+                                        <p class="description">Згенерувати новий рецепт на основі його опису</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            {% else %}
+                <div data-aos="fade-up" data-aos-delay="100">
+                    <p>Ви не ввійшли у свій обліковий запис</p>
+                    <p><a href="{% url 'login' %}">Увійти</a></p>
+                    <p><a href="{% url 'signup' %}">Створити обліковий запис</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}
