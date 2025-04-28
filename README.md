@@ -6,8 +6,8 @@ To run tests run `docker compose run web python3 manage.py test`.
 
 To get a test coverage run:
 
-1) `docker compose run web python3 coverage run --source='.' manage.py test`; 
-2) `docker compose run web python3 coverage report`.
+1) `docker compose run web coverage run --source='.' manage.py test`; 
+2) `docker compose run web coverage report`.
 
 To run migrations run
 `docker compose run web python3 manage.py migrate`
